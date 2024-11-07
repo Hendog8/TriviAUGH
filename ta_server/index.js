@@ -19,6 +19,12 @@ io.on("connection", (socket) => {
 
     socket.on("sent_message", (data) => {
         socket.broadcast.emit("received_message", data);
-        //.broadcast emits to all but self
+        //.broadcast emits to all but self, 
+        //emit is supposed to emit to all including self 
+            //but seems to just emit to self once per instance
     });
+
+    socket.on("joining", (data) => {
+        socket.to(`${data.pin}`).emit('joined', {name:data.nickname, id:socket.id});
+    })
 });
