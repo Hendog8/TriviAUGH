@@ -5,6 +5,7 @@ class Gamer extends Component {
     constructor(){
         super();
         this.state = {
+            id: '',
             nickname: '',
             score: '',
             selectedAnswers: [],
@@ -14,6 +15,6 @@ class Gamer extends Component {
 
     componentDidMount(){
         this.socket = io('/');
-        this.socket.emit()
+        this.socket.emit('joining', )
     }
 }
