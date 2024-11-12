@@ -1,6 +1,8 @@
 let gamers = [];
 let questions = [];
 
+//does this file even matter if I just copy-paste the methods in anyway
+
 module.exports = {
     addGamer:(nickname, id) => {
         let gamer = {
