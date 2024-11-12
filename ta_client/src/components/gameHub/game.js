@@ -24,7 +24,10 @@ class Game extends Component {
     componentDidMount(){
         //axios may actually be unnecessary
         this.socket = io('/');
-        this.socket.on('join')
+        this.socket.on('joined', (data) => {
+            console.log("HELP")
+            this.addGamer(data.nickname, data.id)
+        })
     }
 
     importQuestions(){
@@ -33,6 +36,20 @@ class Game extends Component {
         this.setState({
             questions: imported,
         })*/
+    }
+
+    addGamer(n, i){
+        let gamer = {
+            id: i,
+            nickname: n,
+            score: 0,
+            selectedAnswers: [],
+        }
+        let newGamers = [...this.state.gamers];//man spread syntax is so convenient
+        newGamers.push(gamer);
+        this.setState({
+            gamers: newGamers
+        });
     }
 }
 /*class Question extends Component {
