@@ -25,6 +25,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("joining", (data) => {
-        socket.to(`${data.pin}`).emit('joined', {name:data.nickname, id:socket.id});
+        socket.emit('joined', {name:data.nickname, id:socket.id});
     })
 });
