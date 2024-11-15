@@ -15,6 +15,8 @@ server.listen(4000, () => { console.log("listening on *:4000");});
 
 io.on("connection", (socket) => {
 
+    //socket.join("jakeRoom")
+
     console.log("you are being helped! :cool:")
 
     socket.on("sent_message", (data) => {
