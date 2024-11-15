@@ -10,22 +10,19 @@ class Home extends Component{
             gamer: false,
             key: "thisIsThePassword",
             pass: "", //this is the container for password guesses
-            nick: ""
+            nick: "" //nickname, of course
         }
         this.goHost = this.goHost.bind(this);
         this.goGame = this.goGame.bind(this);
+        this.handlePass = this.handlePass.bind(this);
+        this.handleNick = this.handleNick.bind(this);
         this.joinGame = this.joinGame.bind(this);
+        this.emitTest = this.emitTest.bind(this);
+    }
 
-        //All this component has to do is redirect player to be players
-        //and the host to be the host
-
-        //must pass along proper info
-
-        //must accept a password (host) and nickname (player)
-            //the way kahoot clone does it is to have a method that changes the pin every time the input box changes,
-            //then the button activates a method that makes use of that updated state
-
-        //"GO!" button that emits whatever depending on whether or not the password is there (whether host or nah)
+    componentDidMount(){
+        this.socket = io.connect('http://localhost:4000');
+        //REPLACE WITH io('/') WHEN DEPLOYING (I THINK)
     }
 
     goHost(){
@@ -48,8 +45,19 @@ class Home extends Component{
         });
     }
 
+    handleNick(e){
+        this.setState({
+            nick: e.target.value
+        });
+    }
+
     joinGame(){
-        console.log("wazzzzzaaaaaaaaaaaa");
+        console.log("JOINING!");
+        this.socket.emit("sent_message", {message: this.state.nick});
+    }
+
+    emitTest(){
+        this.socket.emit("sent_message", {message: "huh?"});
     }
 
     render(){
@@ -63,12 +71,14 @@ class Home extends Component{
                         <p className="h-choice">How would you like to join triviAUGHHHHHH?</p>
                         <button className="h-hoster" onClick={this.goHost}>I'd like to host.</button>
                         <button className="h-gamerer" onClick={this.goGame}>I'd like to play.</button>
+                        <br />
+                        <button onClick={this.emitTest}>SOS2</button>
                     </div>
                     :
                         host
                         ?
                         <div className="h-password">
-                            { this.state.pass === key
+                            { this.state.pass !== key
                                 ?
                                 <p className="h-p-waiting">Enter the SECRET PASSWORD:</p>
                                 :
