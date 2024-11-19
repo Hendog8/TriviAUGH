@@ -8,9 +8,11 @@ class Home extends Component{
         this.state = {
             host: false,
             gamer: false,
+            joinable: false, //whether or not a host is already running
+            warning: false,
             key: "thisIsThePassword",
             pass: "", //this is the container for password guesses
-            nick: "" //nickname, of course
+            nick: "", //nickname, of course
         }
         this.goHost = this.goHost.bind(this);
         this.goGame = this.goGame.bind(this);
@@ -22,6 +24,13 @@ class Home extends Component{
 
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
+        /*this.socket.on("received_message", (data) => {
+            alert(data.message);
+        });*/
+        this.socket.on("join_ready", (data) => {
+            console.log("host present");
+            this.setState({ joinable: data });
+        });
         //REPLACE WITH io('/') WHEN DEPLOYING (I THINK)
     }
 
@@ -40,15 +49,11 @@ class Home extends Component{
     }
 
     handlePass(e){
-        this.setState({
-            pass: e.target.value
-        });
+        this.setState({ pass: e.target.value });
     }
 
     handleNick(e){
-        this.setState({
-            nick: e.target.value
-        });
+        this.setState({ nick: e.target.value });
     }
 
     joinGame(){
@@ -56,12 +61,17 @@ class Home extends Component{
         this.socket.emit("sent_message", {message: this.state.nick});
     }
 
+    notJoin(){
+        console.log("no host");
+        this.setState({ warning: true });
+    }
+
     emitTest(){
         this.socket.emit("sent_message", {message: "huh?"});
     }
 
     render(){
-        let {host, gamer, key} = this.state;
+        let {host, gamer, joinable, warning, key} = this.state;
         return(
             <div className="h-hub">
                 {
@@ -75,8 +85,7 @@ class Home extends Component{
                         <button onClick={this.emitTest}>SOS2</button>
                     </div>
                     :
-                        host
-                        ?
+                        host ?
                         <div className="h-password">
                             { this.state.pass !== key
                                 ?
@@ -95,9 +104,22 @@ class Home extends Component{
                         <div className="h-nickname">
                             <p>Enter your nickname here:</p>
                             <input type="text" value={this.state.nick} onChange={this.handleNick} />
-                            <Link to="/join">
-                                <button onClick={this.joinGame}>GO!</button>
-                            </Link>
+                            {!joinable ?
+                                <Link to="/join">
+                                    <button onClick={this.joinGame}>GO!</button>
+                                </Link>
+                                :
+                                <div className="h-unjoinable">
+                                    <button onClick={this.notJoin}>GO!</button>
+                                    {warning ?
+                                        <div className="h-warning">
+                                            <p>There are no triviAUGH games currrently running, so you're unable to join.</p>
+                                        </div>
+                                    :
+                                        <div className="h-warning"/>
+                                    }
+                                </div>
+                            }
                         </div>
                 }
             </div>
