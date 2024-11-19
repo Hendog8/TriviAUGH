@@ -14,20 +14,23 @@ class Game extends Component {
                         {query: "which of the following songs place in Mario Judah's top 5 most streamed?", correct:["die very rough", "miss the rage"], incorrect:["all red", "sky"]}], 
                         //array of question objects 
                         //each includes question, correct, and incorrect answers
-            questionNum: 0, //index of current question
+            questionNum: 0, //index of current question in array
 
             timer: 10, //time in seconds per question
                        //should stay short, don't gotta be 10 tho
+            started: false, //dictates if we're actually playing the game
+                            //or just in the "lobby"
         }
     }
 
     componentDidMount(){
         //axios may actually be unnecessary
         this.socket = io('/');
+        this.socket.emit("game_ready", {running: true});
         this.socket.on('joined', (data) => {
-            console.log("HELP")
-            this.addGamer(data.nickname, data.id)
-        })
+            console.log("HELP");
+            this.addGamer(data.nickname, data.id);
+        });
     }
 
     importQuestions(){
@@ -51,7 +54,24 @@ class Game extends Component {
             gamers: newGamers
         });
     }
+
+    render(){
+        let {gamers, questions, questionNum, timer, started} = this.state;
+        <div className="game">
+            { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
+            <div className="g-hub">
+
+            </div>
+            : //this is the part with the actual game, likely gonna be the most difficult thing to code here
+            <div className="g-gaming">
+
+            </div>
+            }
+        </div>
+    }
 }
+
+export default Game;
 /*class Question extends Component {
     constructor(){
         super();
