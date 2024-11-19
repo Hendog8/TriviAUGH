@@ -28,5 +28,9 @@ io.on("connection", (socket) => {
 
     socket.on("joining", (data) => {
         socket.emit('joined', {name:data.nickname, id:socket.id});
-    })
+    });
+
+    socket.on("game_ready", (data) => {
+        socket.broadcast.emit("join_ready", {joinable: data.running});
+    });
 });
