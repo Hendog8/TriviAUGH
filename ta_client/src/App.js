@@ -1,5 +1,5 @@
 import './App.css';
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import io from "socket.io-client";
 import Home from './components/home/Home';
@@ -13,7 +13,7 @@ function App() {
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
     socket.emit("sent_message", { message: "lmao" });
   }
-  /*useEffect(() => { THIS HOOK ISN'T NECESSARY????
+  /*useEffect(() => { //THIS HOOK ISN'T NECESSARY???? lmao it's not
     socket.on("received_message", (data) => {
       alert(data.message);
     });
