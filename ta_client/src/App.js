@@ -3,7 +3,7 @@ import React, { Component, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import io from "socket.io-client";
 import Home from './components/home/Home';
-//import { Game, Gamer } from './components/gameHub'
+import Game from './components/gameHub/game'
 
 const socket = io.connect("http://localhost:4000");
 
@@ -27,6 +27,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path = '/' Component = {Home}/>
+          <Route path = '/game' Component = {Game}/>
         </Routes>
       </BrowserRouter>
       <button onClick={sendMessage}>SOS</button>
