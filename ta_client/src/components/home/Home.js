@@ -10,7 +10,7 @@ class Home extends Component{
             gamer: false,
             joinable: false, //whether or not a host is already running
             warning: false,
-            key: "thisIsThePassword",
+            key: "pword",
             pass: "", //this is the container for password guesses
             nick: "", //nickname, of course
         }
@@ -19,6 +19,8 @@ class Home extends Component{
         this.handlePass = this.handlePass.bind(this);
         this.handleNick = this.handleNick.bind(this);
         this.joinGame = this.joinGame.bind(this);
+        this.notJoin = this.notJoin.bind(this);
+        this.hostJoin = this.hostJoin.bind(this);
         this.emitTest = this.emitTest.bind(this);
     }
 
@@ -58,12 +60,17 @@ class Home extends Component{
 
     joinGame(){
         console.log("JOINING!");
-        this.socket.emit("sent_message", {message: this.state.nick});
+        this.socket.emit("joining", {message: this.state.nick});
     }
 
     notJoin(){
         console.log("no host");
         this.setState({ warning: true });
+    }
+
+    hostJoin(){
+        console.log("host joining");
+        this.socket.emit("host_joining", true);
     }
 
     emitTest(){
@@ -93,8 +100,8 @@ class Home extends Component{
                                 :
                                 <div className="h-p-correct">
                                     <p> Correct. Welcome back, Thomas.</p>
-                                    <Link to='/host'>
-                                        <button>GO!</button>
+                                    <Link to='/game'>
+                                        <button onClick={this.hostJoin}>GO!</button>
                                     </Link>
                                 </div>
                             }
@@ -104,8 +111,8 @@ class Home extends Component{
                         <div className="h-nickname">
                             <p>Enter your nickname here:</p>
                             <input type="text" value={this.state.nick} onChange={this.handleNick} />
-                            {!joinable ?
-                                <Link to="/join">
+                            {joinable ?
+                                <Link to="/game">
                                     <button onClick={this.joinGame}>GO!</button>
                                 </Link>
                                 :
@@ -116,7 +123,9 @@ class Home extends Component{
                                             <p>There are no triviAUGH games currrently running, so you're unable to join.</p>
                                         </div>
                                     :
-                                        <div className="h-warning"/>
+                                        <div className="h-warning">
+                                            <p>hey gang</p>
+                                        </div>
                                     }
                                 </div>
                             }
