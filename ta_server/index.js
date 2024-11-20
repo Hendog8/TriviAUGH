@@ -30,6 +30,10 @@ io.on("connection", (socket) => {
         socket.emit('joined', {name:data.nickname, id:socket.id});
     });
 
+    socket.on("host_joining", (data) => {
+        socket.emit("host_joined", data);
+    });
+
     socket.on("game_ready", (data) => {
         socket.broadcast.emit("join_ready", {joinable: data.running});
     });
