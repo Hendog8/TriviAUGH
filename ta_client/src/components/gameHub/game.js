@@ -25,7 +25,7 @@ class Game extends Component {
 
     componentDidMount(){
         //axios may actually be unnecessary
-        this.socket = io('/');
+        this.socket = io.connect('http://localhost:4000');
         this.socket.emit("game_ready", {running: true});
         this.socket.on('joined', (data) => {
             console.log("HELP");
@@ -57,17 +57,27 @@ class Game extends Component {
 
     render(){
         let {gamers, questions, questionNum, timer, started} = this.state;
-        <div className="game">
-            { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
-            <div className="g-hub">
+        if(gamers[0] != null){
+            let gamerNum = gamers.length; //last index of gamers array
+        } else {    
+            let gamerNum = 0;
+        }
+        return(
+            <div className="game">
+                { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
+                <div className="g-hub">
+                   { gamers.map((gamer, index) => (
+                        <li key={index}>{gamer}</li>
+                    ))}
+                    <p>wassup gang</p>
+                </div>
+                : //this is the part with the actual game, likely gonna be the most difficult thing to code here
+                <div className="g-gaming">
 
+                </div>
+                }
             </div>
-            : //this is the part with the actual game, likely gonna be the most difficult thing to code here
-            <div className="g-gaming">
-
-            </div>
-            }
-        </div>
+        )
     }
 }
 
