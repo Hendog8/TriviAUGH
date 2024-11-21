@@ -35,6 +35,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("game_ready", (data) => {
-        socket.broadcast.emit("join_ready", {joinable: data.running});
+        socket.emit("join_ready", {running: data.running});
     });
 });
