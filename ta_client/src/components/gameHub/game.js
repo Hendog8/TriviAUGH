@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 //import { connect } from 'react-redux'; what is redux?????
@@ -21,6 +21,7 @@ class Game extends Component {
             started: false, //dictates if we're actually playing the game
                             //or just in the "lobby"
         }
+        this.emitTest = this.emitTest.bind(this);
     }
 
     componentDidMount(){
@@ -53,6 +54,11 @@ class Game extends Component {
         this.setState({
             gamers: newGamers
         });
+    }
+
+    emitTest(){
+        console.log("testing testing testing")
+        this.socket.emit("game_ready", {running: true});
     }
 
     render(){
