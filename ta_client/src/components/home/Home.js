@@ -8,7 +8,7 @@ class Home extends Component{
         this.state = {
             host: false,
             gamer: false,
-            joinable: false, //whether or not a host is already running
+            //joinable: false, //whether or not a host is already running
             warning: false,
             key: "pword",
             pass: "", //this is the container for password guesses
@@ -29,11 +29,12 @@ class Home extends Component{
         /*this.socket.on("received_message", (data) => {
             alert(data.message);
         });*/
-        this.socket.on("join_ready", (data) => {
+        /*this.socket.on("join_ready", (data) => {
             console.log("host present");
             this.setState({ joinable: data });
-        });
-        //REPLACE WITH io('/') WHEN DEPLOYING (I THINK)
+        });*/
+        //REPLACE WITH SERVER ADDRESS WHEN DEPLOYING
+        console.log(this.props.joiner);
     }
 
     goHost(){
@@ -78,7 +79,8 @@ class Home extends Component{
     }
 
     render(){
-        let {host, gamer, joinable, warning, key} = this.state;
+        let {host, gamer, warning, key} = this.state;
+        let joiner = this.props.joiner;
         return(
             <div className="h-hub">
                 {
@@ -111,7 +113,7 @@ class Home extends Component{
                         <div className="h-nickname">
                             <p>Enter your nickname here:</p>
                             <input type="text" value={this.state.nick} onChange={this.handleNick} />
-                            {joinable ?
+                            {joiner == true ?
                                 <Link to="/game">
                                     <button onClick={this.joinGame}>GO!</button>
                                 </Link>
