@@ -30,8 +30,8 @@ function App() {
     alert(data.message);
   });
 
-  socket.on("join_ready", (data) => {
-    running = data.running;
+  socket.on("host_joined", (data) => {
+    running = data.joining;
   });
   // <Route path = '/game' render={(props) => <Game joinable=running {...props} />} />
   return (
