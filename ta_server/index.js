@@ -31,10 +31,10 @@ io.on("connection", (socket) => {
     });
 
     socket.on("host_joining", (data) => {
-        socket.emit("host_joined", data);
+        socket.emit("host_joined", {running: data.joining});
     });
 
     socket.on("game_ready", (data) => {
-        socket.emit("join_ready", {running: data.running});
+        socket.emit("join_ready", {joinable: data.running});
     });
 });
