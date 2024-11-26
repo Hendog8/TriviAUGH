@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 //import { connect } from 'react-redux'; what is redux?????
@@ -21,13 +21,18 @@ class Game extends Component {
             started: false, //dictates if we're actually playing the game
                             //or just in the "lobby"
         }
-        this.emitTest = this.emitTest.bind(this);
+        this.addGamer = this.addGamer.bind(this);
     }
 
     componentDidMount(){
+        console.log("huh")
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
-        this.socket.emit("game_ready", {running: true});
+        this.socket.on('host_joined', (data) => {
+            console.log("host connection")
+            this.socket.emit("game_ready", {running: data}); //this doesn't run?
+        });
+        console.log("huh2")
         this.socket.on('joined', (data) => {
             console.log("HELP");
             this.addGamer(data.nickname, data.id);
@@ -54,11 +59,6 @@ class Game extends Component {
         this.setState({
             gamers: newGamers
         });
-    }
-
-    emitTest(){
-        console.log("testing testing testing")
-        this.socket.emit("game_ready", {running: true});
     }
 
     render(){
