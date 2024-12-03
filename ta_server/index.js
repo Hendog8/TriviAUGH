@@ -31,10 +31,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("host_joining", (data) => {
-        socket.emit("host_joined", {running: data.joining});
+        console.log("hosting??????")
+        socket.emit('host_joined', {running: data.joining});
     });
 
-    socket.on("game_ready", (data) => {
-        socket.emit("join_ready", {joinable: data.running});
+    socket.on("game_ready", (data) => {//this never catches anything?
+        console.log("no, not yippee.");
+        socket.broadcast.emit("join_ready", {joinable: data.running});
     });
 });
