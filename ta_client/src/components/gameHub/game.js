@@ -22,7 +22,7 @@ class Game extends Component {
                             //or just in the "lobby"
         }
         this.addGamer = this.addGamer.bind(this);
-        this.reReady = this.reReady.bind(this);
+        this.sendReady = this.sendReady.bind(this);
     }
 
     componentDidMount(){
@@ -34,7 +34,7 @@ class Game extends Component {
             this.socket.emit("game_ready", {running: data}); //this doesn't run?
         });*/
         //this.socket.emit("game_ready", {running: true});
-        this.reReady();
+        this.sendReady();
         console.log("huh2")
         this.socket.on('joined', (data) => {
             console.log("HELP");
@@ -64,7 +64,7 @@ class Game extends Component {
         });
     }
 
-    reReady(){
+    sendReady(){
         console.log("yippee! yippee! yippee!");
         this.socket.emit("game_ready", {running: true});
     }
@@ -84,11 +84,11 @@ class Game extends Component {
                         <li key={index}>{gamer}</li>
                     ))}
                     <p>wassup gang</p>
-                    <button onClick={this.reReady}>allow players to join</button>
+                    <button onClick={this.sendReady}>allow players to join</button>
                 </div>
                 : //this is the part with the actual game, likely gonna be the most difficult thing to code here
                 <div className="g-gaming">
-                    <button onClick={this.reReady}>allow players to join</button>
+                    <button onClick={this.sendReady}>allow players to join</button>
                 </div>
                 }
             </div>
