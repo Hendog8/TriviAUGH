@@ -27,7 +27,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("joining", (data) => {
-        socket.emit('joined', {name:data.nickname, id:socket.id});
+        console.log(data);
+        socket.broadcast.emit('joined', {name:data.message});
     });
 
     socket.on("host_joining", (data) => {
