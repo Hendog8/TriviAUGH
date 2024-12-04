@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+root.render(//REMOVE STRICT MODE WRAP TO HAVE METHODS ONLY RUN ONCE
   <React.StrictMode>
     <App />
   </React.StrictMode>
