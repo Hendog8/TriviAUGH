@@ -1,5 +1,6 @@
 import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 //import { connect } from 'react-redux'; what is redux?????
 
@@ -21,15 +22,24 @@ class Game extends Component {
             started: false, //dictates if we're actually playing the game
                             //or just in the "lobby"
         }
+        this.addGamer = this.addGamer.bind(this);
+        this.sendReady = this.sendReady.bind(this);
     }
 
     componentDidMount(){
+        console.log("huh");
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
-        this.socket.emit("game_ready", {running: true});
+        /*this.socket.on('host_joined', (data) => { //ain't running
+            console.log("host connection")
+            this.socket.emit("game_ready", {running: data}); //this doesn't run?
+        });*/
+        //this.socket.emit("game_ready", {running: true});
+        this.sendReady();
+        console.log("huh2");
         this.socket.on('joined', (data) => {
             console.log("HELP");
-            this.addGamer(data.nickname, data.id);
+            this.addGamer(data.name);
         });
     }
 
@@ -41,9 +51,10 @@ class Game extends Component {
         })*/
     }
 
-    addGamer(n, i){
+    addGamer(n){
+        console.log("A gamer is gaming " + n);
         let gamer = {
-            id: i,
+            //id: i,
             nickname: n,
             score: 0,
             selectedAnswers: [],
@@ -53,6 +64,11 @@ class Game extends Component {
         this.setState({
             gamers: newGamers
         });
+    }
+
+    sendReady(){
+        console.log("yippee! yippee! yippee!");
+        this.socket.emit("game_ready", {running: true});
     }
 
     render(){
@@ -67,15 +83,19 @@ class Game extends Component {
                 { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
                 <div className="g-hub">
                    { gamers.map((gamer, index) => (
-                        <li key={index}>{gamer}</li>
+                        <li key={index}>{gamer.nickname}</li>
                     ))}
                     <p>wassup gang</p>
+                    <button onClick={this.sendReady}>allow players to join</button>
                 </div>
                 : //this is the part with the actual game, likely gonna be the most difficult thing to code here
                 <div className="g-gaming">
-
+                    <button onClick={this.sendReady}>allow players to join</button>
                 </div>
                 }
+                <Link to="/">
+                    <button>yeah get me out of here</button>
+                </Link>
             </div>
         )
     }

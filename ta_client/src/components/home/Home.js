@@ -26,6 +26,7 @@ class Home extends Component{
 
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
+                                //REPLACE WITH REAL SERVER ADDRESS WHEN DEPLOYING
         /*this.socket.on("received_message", (data) => {
             alert(data.message);
         });*/
@@ -33,7 +34,7 @@ class Home extends Component{
             console.log("host present");
             this.setState({ joinable: data });
         });
-        //REPLACE WITH io('/') WHEN DEPLOYING (I THINK)
+        console.log("Joiner: " + this.props.joiner);
     }
 
     goHost(){
@@ -70,7 +71,7 @@ class Home extends Component{
 
     hostJoin(){
         console.log("host joining");
-        this.socket.emit("host_joining", true);
+        this.socket.emit("host_joining", {joining: true});
     }
 
     emitTest(){
@@ -79,6 +80,8 @@ class Home extends Component{
 
     render(){
         let {host, gamer, joinable, warning, key} = this.state;
+        let {joiner} = this.props;
+        console.log("Joinable: " + joinable + " Joiner: " + joiner);
         return(
             <div className="h-hub">
                 {
@@ -111,7 +114,7 @@ class Home extends Component{
                         <div className="h-nickname">
                             <p>Enter your nickname here:</p>
                             <input type="text" value={this.state.nick} onChange={this.handleNick} />
-                            {joinable ?
+                            {joinable || joiner ?
                                 <Link to="/game">
                                     <button onClick={this.joinGame}>GO!</button>
                                 </Link>
