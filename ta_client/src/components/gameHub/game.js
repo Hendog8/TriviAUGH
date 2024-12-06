@@ -21,9 +21,22 @@ class Game extends Component {
                        //should stay short, don't gotta be 10 tho
             started: false, //dictates if we're actually playing the game
                             //or just in the "lobby"
+            host: false, //indicates if you're the host or not
+
+            additionalGamer: {}, //instead of the gamers array, just one gamer to add every time?
+                                 //I think it could work
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
+        /*let oldGamers = [];
+        console.log(this.props.accepting);
+        if(this.props.accepting){
+            let {joinedbefore} = this.props;
+            for(let x = 0; x < joinedbefore.length; x++){
+                oldGamers.push(joinedbefore[x]);
+            }
+        }
+        this.setState({ gamers: oldGamers });*/
     }
 
     componentDidMount(){
@@ -59,11 +72,12 @@ class Game extends Component {
             score: 0,
             selectedAnswers: [],
         }
-        let newGamers = [...this.state.gamers];//man spread syntax is so convenient
+        /*let newGamers = [...this.state.gamers];//man spread syntax is so convenient
         newGamers.push(gamer);
         this.setState({
             gamers: newGamers
-        });
+        });*/
+        this.setState({ additionalGamer: gamer });
     }
 
     sendReady(){
@@ -71,18 +85,41 @@ class Game extends Component {
         this.socket.emit("game_ready", {running: true});
     }
 
+    endGame(){
+        console.log("game over");
+        this.socket.emit("game_ended", {gamers: []});
+    }
+
     render(){
-        let {gamers, questions, questionNum, timer, started} = this.state;
-        if(gamers[0] != null){
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer} = this.state;
+        let {joinedbefore, accepting} = this.props;
+        let yep = true;
+        if(accepting && yep){
+            /*for(const x of gamers){
+                joinedbefore.push(x);
+            }*/
+           joinedbefore.push(additionalGamer);
+           yep = false;
+        }
+        /*if(gamers[0] != null){
             let gamerNum = gamers.length; //last index of gamers array
         } else {    
             let gamerNum = 0;
-        }
+        }*/
         return(
             <div className="game">
                 { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
                 <div className="g-hub">
-                   { gamers.map((gamer, index) => (
+                    { hoster ?
+                        <div className="g-hostview">
+
+                        </div>
+                    :
+                        <div className="g-gamerview">
+
+                        </div>
+                    }
+                    { joinedbefore.map((gamer, index) => (
                         <li key={index}>{gamer.nickname}</li>
                     ))}
                     <p>wassup gang</p>
