@@ -23,20 +23,13 @@ class Game extends Component {
                             //or just in the "lobby"
             host: false, //indicates if you're the host or not
 
-            additionalGamer: {}, //instead of the gamers array, just one gamer to add every time?
-                                 //I think it could work
+            additionalGamer: {}, //rather than replace gamers array,
+                                 //use both? could work NO that's actually so much worse  
+            firstLoop: true, //simple var that lets us make gamerList only once
+                            //hopefully, at least
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
-        /*let oldGamers = [];
-        console.log(this.props.accepting);
-        if(this.props.accepting){
-            let {joinedbefore} = this.props;
-            for(let x = 0; x < joinedbefore.length; x++){
-                oldGamers.push(joinedbefore[x]);
-            }
-        }
-        this.setState({ gamers: oldGamers });*/
     }
 
     componentDidMount(){
@@ -54,7 +47,21 @@ class Game extends Component {
             console.log("HELP");
             this.addGamer(data.name);
         });
+
+        let oldGamers = [];
+        console.log(this.props.accepting);
+        if(this.props.accepting){
+            let {joinedbefore} = this.props;
+            for(let x = 0; x < joinedbefore.length; x++){
+                oldGamers.push(joinedbefore[x]);
+            }
+        }
+        this.setState({ gamers: oldGamers });
     }
+
+    /*componentWillUpdate(){
+        this.setState({ firstLoop: false });
+    }*/
 
     importQuestions(){
         /*imported = [{query:"What?", correct:["who", "how"], incorrect:["where", "why"]},
@@ -72,11 +79,11 @@ class Game extends Component {
             score: 0,
             selectedAnswers: [],
         }
-        /*let newGamers = [...this.state.gamers];//man spread syntax is so convenient
+        let newGamers = [...this.state.gamers];//man spread syntax is so convenient
         newGamers.push(gamer);
         this.setState({
             gamers: newGamers
-        });*/
+        })
         this.setState({ additionalGamer: gamer });
     }
 
@@ -91,16 +98,31 @@ class Game extends Component {
     }
 
     render(){
-        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer} = this.state;
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop} = this.state;
         let {joinedbefore, accepting} = this.props;
-        let yep = true;
+        let gamerList = [];
+        if(firstLoop){
+            for(const x of joinedbefore){
+                gamerList.push(x);
+            }
+        }
+        for(const y of gamers){
+            gamerList.push(y);
+        }
+        //gamerList.push(additionalGamer);
+        //solution ONLY works if all instances are at least *created* when the first player joins. Is there a way to store on server side?
+        //I swear it worked the first time what happened
+        //works for the first two instances, more have repetition for some reason
+            //like the whole list repeats, if the first instance shows "g, a, m, e" the third will have "g, a, m, e, g, a, m, e"
+        
+        /*let yep = true;
         if(accepting && yep){
-            /*for(const x of gamers){
+            for(const x of gamers){
                 joinedbefore.push(x);
-            }*/
+            }
            joinedbefore.push(additionalGamer);
            yep = false;
-        }
+        }*/
         /*if(gamers[0] != null){
             let gamerNum = gamers.length; //last index of gamers array
         } else {    
@@ -110,16 +132,16 @@ class Game extends Component {
             <div className="game">
                 { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
                 <div className="g-hub">
-                    { hoster ?
+                    { hoster ? //host's page
                         <div className="g-hostview">
-
+                            
                         </div>
-                    :
+                    : //players' page
                         <div className="g-gamerview">
 
                         </div>
                     }
-                    { joinedbefore.map((gamer, index) => (
+                    { gamerList.map((gamer, index) => (
                         <li key={index}>{gamer.nickname}</li>
                     ))}
                     <p>wassup gang</p>
