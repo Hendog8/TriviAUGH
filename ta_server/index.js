@@ -15,8 +15,6 @@ server.listen(4000, () => { console.log("listening on *:4000");});
 
 io.on("connection", (socket) => {
 
-    //socket.join("jakeRoom")
-
     console.log("you are being helped! :cool:")
 
     socket.on("sent_message", (data) => {
@@ -33,11 +31,16 @@ io.on("connection", (socket) => {
 
     socket.on("host_joining", (data) => {
         console.log("hosting??????")
-        socket.emit('host_joined', {running: data.joining});
+        socket.broadcast.emit('host_joined', {running: data.joining});
     });
 
     socket.on("game_ready", (data) => {//this never catches anything?
         console.log("no, not yippee.");
         socket.broadcast.emit("join_ready", {joinable: data.running});
+    });
+
+    socket.on("game_ended", (data) => {
+        console.log("ending");
+        socket.broadcast.emit("clean_slate", {gamers: data.gamers});
     });
 });
