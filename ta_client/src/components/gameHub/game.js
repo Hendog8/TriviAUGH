@@ -21,8 +21,8 @@ class Game extends Component {
                        //should stay short, don't gotta be 10 tho
             started: false, //dictates if we're actually playing the game
                             //or just in the "lobby"
-            host: false, //indicates if you're the host or not
-
+            hoster: false, //indicates if you're the host or not
+                         //should be a prop instead?
             additionalGamer: {}, //rather than replace gamers array,
                                  //use both? could work NO that's actually so much worse  
             firstLoop: true, //simple var that lets us make gamerList only once
@@ -36,12 +36,13 @@ class Game extends Component {
         console.log("huh");
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
-        /*this.socket.on('host_joined', (data) => { //ain't running
-            console.log("host connection")
-            this.socket.emit("game_ready", {running: data}); //this doesn't run?
-        });*/
+        this.socket.on('host_joined', (data) => { //ain't running
+            console.log("host connection");
+            this.sendReady();
+            //this.socket.emit("game_ready", {running: data}); //this doesn't run?
+        });
         //this.socket.emit("game_ready", {running: true});
-        this.sendReady();
+        //this.sendReady();
         console.log("huh2");
         this.socket.on('joined', (data) => {
             console.log("HELP");
@@ -100,21 +101,30 @@ class Game extends Component {
     render(){
         let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop} = this.state;
         let {joinedbefore, accepting} = this.props;
+        console.log("gamers: " + gamers);
+        console.log("joinedBefore: " + joinedbefore);
         let gamerList = [];
-        if(firstLoop){
-            for(const x of joinedbefore){
-                gamerList.push(x);
-            }
+        for(const x of joinedbefore){
+            gamerList.push(x);
         }
         for(const y of gamers){
-            gamerList.push(y);
+            let nonpusher = false;
+            for(const z of gamerList){
+                if(y.nickname === z.nickname){
+                    nonpusher = true;
+                }
+            }
+            if(!nonpusher){
+                gamerList.push(y);
+            }
         }
+        console.log("gamerList: " + gamerList);
         //gamerList.push(additionalGamer);
-        //solution ONLY works if all instances are at least *created* when the first player joins. Is there a way to store on server side?
-        //I swear it worked the first time what happened
-        //works for the first two instances, more have repetition for some reason
-            //like the whole list repeats, if the first instance shows "g, a, m, e" the third will have "g, a, m, e, g, a, m, e"
-        
+        //we're so back
+        //only works in strict mode tho
+        //just have it double emit by default?
+        //need a way to ensure the way the instance sending the player also receives the player.
+
         /*let yep = true;
         if(accepting && yep){
             for(const x of gamers){
@@ -134,11 +144,11 @@ class Game extends Component {
                 <div className="g-hub">
                     { hoster ? //host's page
                         <div className="g-hostview">
-                            
+                            <p className="g-hostcheck">you're me, right?</p>
                         </div>
                     : //players' page
                         <div className="g-gamerview">
-
+                            <p className="g-gamercheck">and you aren't.</p>
                         </div>
                     }
                     { gamerList.map((gamer, index) => (
