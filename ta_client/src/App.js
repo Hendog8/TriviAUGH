@@ -10,6 +10,8 @@ const socket = io.connect("http://localhost:4000");
 function App() {
   
   var running;
+  var gamers = [];
+  var gaming = false; //I think this is super unnecessary
 
   function sendMessage(){
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
@@ -26,12 +28,29 @@ function App() {
     console.log("stopping host" + running);
   }
 
+  function addGamer(n){
+      console.log("A gamer is gaming " + n);
+      let gamer = {
+          //id: i,
+          nickname: n,
+          score: 0,
+          selectedAnswers: [],
+      }
+      gamers.push(gamer);
+      gaming = true;
+  }
+
   socket.on("received_message", (data) => {
     alert(data.message);
   });
 
   socket.on("host_joined", (data) => {
     running = data.joining;
+  });
+
+  socket.on('joined', (data) => {
+    console.log("HELP");
+    addGamer(data.name);
   });
   // <Route path = '/game' render={(props) => <Game joinable=running {...props} />} />
   return (
@@ -43,7 +62,7 @@ function App() {
             :
             <Route path = '/' Component={() => (<Home joiner={false} />)} />
           }
-          <Route path = '/game' Component = {Game} />
+          <Route path = '/game' Component = {() => (<Game joinedbefore={gamers} accepting={gaming} />)} />
         </Routes>
       </BrowserRouter>
       <button onClick={sendMessage}>SOS</button>
