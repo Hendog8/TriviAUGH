@@ -103,7 +103,7 @@ class Home extends Component{
                                 :
                                 <div className="h-p-correct">
                                     <p> Correct. Welcome back, Thomas.</p>
-                                    <Link to='/game'>
+                                    <Link to='/game/host'>
                                         <button onClick={this.hostJoin}>GO!</button>
                                     </Link>
                                 </div>
@@ -115,7 +115,7 @@ class Home extends Component{
                             <p>Enter your nickname here:</p>
                             <input type="text" value={this.state.nick} onChange={this.handleNick} />
                             {joinable || joiner ?
-                                <Link to="/game">
+                                <Link to="/game/game">
                                     <button onClick={this.joinGame}>GO!</button>
                                 </Link>
                                 :
