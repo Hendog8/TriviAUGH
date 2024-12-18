@@ -27,6 +27,10 @@ class Game extends Component {
                                  //use both? could work NO that's actually so much worse  
             firstLoop: true, //simple var that lets us make gamerList only once
                             //hopefully, at least
+            me: {}, //the gamer that created this instance.
+                    //used to pass name to the actual game for scorekeeping
+            meTest: true, //use this to check a single if statement of the first gamer to join.
+
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
@@ -50,14 +54,41 @@ class Game extends Component {
         });
 
         let oldGamers = [];
-        console.log(this.props.accepting);
-        if(this.props.accepting){
-            let {joinedbefore} = this.props;
+        //console.log(this.props.accepting);
+        //if(this.props.accepting){
+            let {joinedbefore, host} = this.props;
+            if(this.state.meTest && !host){
+                console.log("AUIONAOINVUOINS " + joinedbefore.toString);
+                this.setState({
+                    meTest: false,
+                    me: joinedbefore[joinedbefore.length-1]
+                });
+            }
             for(let x = 0; x < joinedbefore.length; x++){
                 oldGamers.push(joinedbefore[x]);
+                /*if(this.state.meTest && x == joinedbefore.length-1 && !host){
+                    console.log("Metesting: " + joinedbefore[x].nickname);
+                    this.setState({
+                        meTest: false,
+                        me: joinedbefore[x]
+                    });
+                }*/
             }
-        }
+        console.log("AHHHHHHHHHHHHHH oldGamers: " + oldGamers.toString());
+        /*if(this.state.meTest && !host){
+            console.log("Metesting: " + oldGamers[oldGamers.length-1].nickname);
+            this.setState({
+                meTest: false,
+                me: oldGamers[oldGamers.length-1]
+            });
+        }*/
+        //}
         this.setState({ gamers: oldGamers });
+        //console.log("I'm " + me.nickname);
+        console.log("hosting? " + this.props.host);
+        /*if(!this.props.host){
+            this.setState({ me: oldGamers[oldGamers.length-1] });
+        }*/
     }
 
     /*componentWillUpdate(){
@@ -86,6 +117,13 @@ class Game extends Component {
             gamers: newGamers
         })
         this.setState({ additionalGamer: gamer });
+        if(this.state.meTest && !this.props.host){
+            console.log("Metesting: " + gamer.nickname);
+            this.setState({
+                meTest: false,
+                me: gamer.nickname
+            });
+        }
     }
 
     sendReady(){
@@ -99,8 +137,8 @@ class Game extends Component {
     }
 
     render(){
-        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop} = this.state;
-        let {joinedbefore, accepting} = this.props;
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me} = this.state;
+        let {joinedbefore, host} = this.props;
         console.log("gamers: " + gamers);
         console.log("joinedBefore: " + joinedbefore);
         let gamerList = [];
@@ -119,6 +157,7 @@ class Game extends Component {
             }
         }
         console.log("gamerList: " + gamerList);
+        console.log("I'm " + me.nickname);
         //gamerList.push(additionalGamer);
         //we're so back
         //only works in strict mode tho
@@ -142,13 +181,13 @@ class Game extends Component {
             <div className="game">
                 { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
                 <div className="g-hub">
-                    { hoster ? //host's page
+                    { host ? //host's page
                         <div className="g-hostview">
                             <p className="g-hostcheck">you're me, right?</p>
                         </div>
                     : //players' page
                         <div className="g-gamerview">
-                            <p className="g-gamercheck">and you aren't.</p>
+                            <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
                         </div>
                     }
                     { gamerList.map((gamer, index) => (
