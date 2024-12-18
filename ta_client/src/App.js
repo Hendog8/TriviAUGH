@@ -12,6 +12,8 @@ function App() {
   var running;
   var gamers = [];
   var gaming = false; //I think this is super unnecessary
+  var hosting = false; //this is also probably unnecessary
+  var started = false;
 
   function sendMessage(){
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
@@ -50,7 +52,18 @@ function App() {
 
   socket.on('joined', (data) => {
     console.log("HELP");
+    hosting = false;
     addGamer(data.name);
+  });
+
+  socket.on('host_joined', (data) => {
+    console.log("this is a host");
+    hosting = true;
+  });
+
+  socket.on('game_started', (data) => {
+    console.log("starting game!");
+    started = true;
   });
   // <Route path = '/game' render={(props) => <Game joinable=running {...props} />} />
   return (
@@ -62,7 +75,16 @@ function App() {
             :
             <Route path = '/' Component={() => (<Home joiner={false} />)} />
           }
-          <Route path = '/game' Component = {() => (<Game joinedbefore={gamers} accepting={gaming} />)} />
+          { started ?
+            <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
+            :
+            <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
+          }
+          { started ?
+            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
+            :
+            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
+          }
         </Routes>
       </BrowserRouter>
       <button onClick={sendMessage}>SOS</button>
