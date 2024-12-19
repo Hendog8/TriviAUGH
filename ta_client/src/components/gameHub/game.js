@@ -27,7 +27,8 @@ class Game extends Component {
                                  //use both? could work NO that's actually so much worse  
             firstLoop: true, //simple var that lets us make gamerList only once
                             //hopefully, at least
-            me: {}, //the gamer that created this instance.
+            me: {nickname: "host", score: null, selectedAnswers: null}, 
+                    //the gamer that created this instance.
                     //used to pass name to the actual game for scorekeeping
             meTest: true, //use this to check a single if statement of the first gamer to join.
 
@@ -37,6 +38,7 @@ class Game extends Component {
     }
 
     componentDidMount(){
+        let {joinedbefore, host} = this.props;
         console.log("huh");
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
@@ -49,19 +51,19 @@ class Game extends Component {
         //this.sendReady();
         console.log("huh2");
         this.socket.on('joined', (data) => {
-            console.log("HELP");
+            console.log("HELP, I'm dying!");
+            console.log("fujangpuionduivnasuidnvaiundvioasneuivansei");
             this.addGamer(data.name);
         });
 
         let oldGamers = [];
         //console.log(this.props.accepting);
         //if(this.props.accepting){
-            let {joinedbefore, host} = this.props;
             if(this.state.meTest && !host){
                 console.log("AUIONAOINVUOINS " + joinedbefore.toString);
                 this.setState({
                     meTest: false,
-                    me: joinedbefore[joinedbefore.length-1]
+                    //me: joinedbefore[joinedbefore.length-1]
                 });
             }
             for(let x = 0; x < joinedbefore.length; x++){
@@ -110,20 +112,24 @@ class Game extends Component {
             nickname: n,
             score: 0,
             selectedAnswers: [],
+            /*toString: function() {
+                return "nickname: " + this.nickname;
+            }*/
         }
         let newGamers = [...this.state.gamers];//man spread syntax is so convenient
+        console.log("I HATE YOU I HATE YOU I HATE YOU");
         newGamers.push(gamer);
         this.setState({
             gamers: newGamers
-        })
-        this.setState({ additionalGamer: gamer });
-        if(this.state.meTest && !this.props.host){
+        });
+        //this.setState({ additionalGamer: gamer });
+        console.log("someone please send help");
+        //if(this.state.meTest && !this.props.host){
+        if(this.state.me.nickname === "host"){
             console.log("Metesting: " + gamer.nickname);
-            this.setState({
-                meTest: false,
-                me: gamer.nickname
-            });
+            this.setState({ me: gamer });
         }
+        console.log("I am " + this.state.me.nickname);
     }
 
     sendReady(){
@@ -158,6 +164,7 @@ class Game extends Component {
         }
         console.log("gamerList: " + gamerList);
         console.log("I'm " + me.nickname);
+        //let myName = me.nickname;
         //gamerList.push(additionalGamer);
         //we're so back
         //only works in strict mode tho
@@ -187,7 +194,7 @@ class Game extends Component {
                         </div>
                     : //players' page
                         <div className="g-gamerview">
-                            <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
+                            <p className="g-gamercheck">and you aren't. You're {"myName"}</p>
                         </div>
                     }
                     { gamerList.map((gamer, index) => (
