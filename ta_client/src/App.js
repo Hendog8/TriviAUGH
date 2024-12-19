@@ -14,6 +14,7 @@ function App() {
   var gaming = false; //I think this is super unnecessary
   var hosting = false; //this is also probably unnecessary
   var started = false;
+  var myself = {};
 
   function sendMessage(){
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
