@@ -53,7 +53,18 @@ class Game extends Component {
         this.socket.on('joined', (data) => {
             console.log("HELP, I'm dying!");
             console.log("fujangpuionduivnasuidnvaiundvioasneuivansei");
-            this.addGamer(data.name);
+            let newTest = true;
+            for(const g of this.state.gamers){
+                if(g.nickname === data.name){
+                    newTest = false;
+                }
+            }
+            if(newTest){
+                this.addGamer(data.name);
+                if(this.state.host){
+                    this.socket.emit("joining", {message: data.name});
+                }
+            }
         });
 
         let oldGamers = [];
@@ -127,7 +138,7 @@ class Game extends Component {
         //if(this.state.meTest && !this.props.host){
         if(this.state.me.nickname === "host"){
             console.log("Metesting: " + gamer.nickname);
-            this.setState({ me: gamer });
+            this.setState({ me: {nickname: gamer.nickname, score: 0, selectedAnswers: []} });
         }
         console.log("I am " + this.state.me.nickname);
     }
@@ -194,7 +205,7 @@ class Game extends Component {
                         </div>
                     : //players' page
                         <div className="g-gamerview">
-                            <p className="g-gamercheck">and you aren't. You're {"myName"}</p>
+                            <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
                         </div>
                     }
                     { gamerList.map((gamer, index) => (
