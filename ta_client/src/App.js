@@ -3,7 +3,7 @@ import React, { Component, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import io from "socket.io-client";
 import Home from './components/home/Home';
-import Game from './components/gameHub/game'
+import Game from './components/gameHub/gameLanding'
 
 const socket = io.connect("http://localhost:4000");
 
@@ -78,7 +78,7 @@ function App() {
           }
           { started ?
             <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
-            :
+            ://allows a change to the component if the game is running, letting us not have to code the whole game and the landing in the same file
             <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
           }
           { started ?
