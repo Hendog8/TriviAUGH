@@ -56,12 +56,15 @@ class Game extends Component {
             let newTest = true;
             for(const g of this.state.gamers){
                 if(g.nickname === data.name){
+                    console.log(data.name + " is already taken");
+                    console.log(g.nickname + " is also already taken");
                     newTest = false;
                 }
             }
             if(newTest){
                 this.addGamer(data.name);
                 if(this.state.host){
+                    console.log("trying to add " + data.name + " one more time");
                     this.socket.emit("joining", {message: data.name});
                 }
             }
@@ -153,6 +156,11 @@ class Game extends Component {
         this.socket.emit("game_ended", {gamers: []});
     }
 
+    startGame(){
+        console.log("game start!");
+        this.socket.emit("game_start", {gamers: this.state.gamers});
+    }
+
     render(){
         let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me} = this.state;
         let {joinedbefore, host} = this.props;
@@ -215,9 +223,11 @@ class Game extends Component {
                     <button onClick={this.sendReady}>allow players to join</button>
                 </div>
                 : //this is the part with the actual game, likely gonna be the most difficult thing to code here
-                <div className="g-gaming">
-                    <button onClick={this.sendReady}>allow players to join</button>
+                <div className="g-ready">
+                    <p className="g-gamernotice">The game has begun!</p>
+                    <button onClick={this.sendReady}>JOIN!!!!</button>
                 </div>
+                //sendReady here is gonna need to change to a way to change components to Playing
                 }
                 <Link to="/">
                     <button>yeah get me out of here</button>
