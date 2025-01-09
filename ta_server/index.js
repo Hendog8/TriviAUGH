@@ -43,4 +43,9 @@ io.on("connection", (socket) => {
         console.log("ending");
         socket.broadcast.emit("clean_slate", {gamers: data.gamers});
     });
+
+    socket.on ("player_update", (data) => {
+        console.log("player update sending");
+        socket.broadcast.emit("player_updated", data);
+    });
 });
