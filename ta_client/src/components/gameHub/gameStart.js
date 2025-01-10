@@ -51,9 +51,13 @@ class Playing extends Component {
         let { nickname, score, selectedAnswers } = this.state;
 
         <div className='playingGame'>
-            <p className='p-name'>{nickname}</p>
-
-            <button className='hi!'>GO GO GO GO</button>
+            <p className='p-name'>{nickname + '; ' + score}</p>
+            <div className='p-answers'>
+                <button className='p-a1'>this is the first answer</button>
+                <button className='p-a2'>this is the second answer</button>
+                <button className='p-a3'>this is the third answer</button>
+                <button className='p-a4'>this is the fourth answer</button>
+            </div>
         </div>
     }
 }
