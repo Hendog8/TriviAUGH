@@ -63,7 +63,7 @@ class Game extends Component {
             }
             if(newTest){
                 this.addGamer(data.name);
-                if(this.state.host){
+                if(host){
                     console.log("trying to add " + data.name + " one more time");
                     this.socket.emit("joining", {message: data.name});
                 }
@@ -139,7 +139,7 @@ class Game extends Component {
         //this.setState({ additionalGamer: gamer });
         console.log("someone please send help");
         //if(this.state.meTest && !this.props.host){
-        if(this.state.me.nickname === "host"){
+        if(this.state.me.nickname === "host" && !this.props.host){
             console.log("Metesting: " + gamer.nickname);
             this.setState({ me: {nickname: gamer.nickname, score: 0, selectedAnswers: []} });
         }
