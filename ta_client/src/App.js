@@ -54,7 +54,17 @@ function App() {
   socket.on('joined', (data) => {
     console.log("HELP");
     hosting = false;
-    addGamer(data.name);
+    let newTest = true;
+    for(const g of gamers){
+      if(g.nickname === data.name){
+        //console.log(data.name + " is already taken");
+        //console.log(g.nickname + " is also already taken");
+        newTest = false;
+      }
+    }
+    if(newTest){
+      addGamer(data.name);
+    }
   });
 
   socket.on('host_joined', (data) => {
