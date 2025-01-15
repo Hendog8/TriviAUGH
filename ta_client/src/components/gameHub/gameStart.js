@@ -5,7 +5,7 @@ class Playing extends Component {
     constructor(){
         super();
         this.state = {
-            //id: '',
+            id: 0,
             nickname: '',
             score: 0,
             selectedAnswers: [],
@@ -15,7 +15,7 @@ class Playing extends Component {
 
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
-        this.setState({ nickname: this.props.name });
+        this.setState({ nickname: this.props.name, id: this.props.id });
 
         this.socket.on("player_updated", (data) => {
             console.log("player update received");
