@@ -15,6 +15,8 @@ server.listen(4000, () => { console.log("listening on *:4000");});
 
 io.on("connection", (socket) => {
 
+    let playerNum = -1;
+
     console.log("you are being helped! :cool:")
 
     socket.on("sent_message", (data) => {
@@ -25,8 +27,9 @@ io.on("connection", (socket) => {
     });
 
     socket.on("joining", (data) => {
-        console.log(data);
-        socket.broadcast.emit('joined', {name:data.message});
+        playerNum++;
+        console.log(data, playerNum);
+        socket.broadcast.emit('joined', {name:data.message, id:playerNum});
     });
 
     socket.on("host_joining", (data) => {
