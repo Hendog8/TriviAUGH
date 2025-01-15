@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Playing from './gameStart';
 //import { connect } from 'react-redux'; what is redux?????
 
 
@@ -35,6 +36,7 @@ class Game extends Component {
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
+        this.startGame = this.startGame.bind(this);
     }
 
     componentDidMount(){
@@ -105,6 +107,9 @@ class Game extends Component {
         /*if(!this.props.host){
             this.setState({ me: oldGamers[oldGamers.length-1] });
         }*/
+        this.socket.on("game_started", (data) => {
+            this.setState({ started: true });
+        });
     }
 
     /*componentWillUpdate(){
@@ -205,33 +210,41 @@ class Game extends Component {
         }*/
         return(
             <div className="game">
-                { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
-                <div className="g-hub">
-                    { host ? //host's page
-                        <div className="g-hostview">
-                            <p className="g-hostcheck">you're me, right?</p>
-                        </div>
-                    : //players' page
-                        <div className="g-gamerview">
-                            <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
-                        </div>
+
+                {host || !started ?
+                <div className="g-waiting">
+                    { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
+                    <div className="g-hub">
+                        { host ? //host's page
+                            <div className="g-hostview">
+                                <p className="g-hostcheck">you're me, right?</p>
+                                <button classname="g-hoststart" onClick={this.startGame}>if so, you can START GAME!</button>
+                            </div>
+                        : //players' page
+                            <div className="g-gamerview">
+                                <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
+                            </div>
+                        }
+                        { gamerList.map((gamer, index) => (
+                            <li key={index}>{gamer.nickname}</li>
+                        ))}
+                        <p>wassup gang</p>
+                        <button onClick={this.sendReady}>allow players to join</button>
+                    </div>
+                    : //this is the part with the actual game, likely gonna be the most difficult thing to code here
+                    <div className="g-ready">
+                        <p className="g-gamernotice">The game has begun!</p>
+                        <button onClick={this.sendReady}>JOIN!!!!</button>
+                    </div>
+                    //sendReady here is gonna need to change to a way to change components to Playing
                     }
-                    { gamerList.map((gamer, index) => (
-                        <li key={index}>{gamer.nickname}</li>
-                    ))}
-                    <p>wassup gang</p>
-                    <button onClick={this.sendReady}>allow players to join</button>
+                    <Link to="/">
+                        <button>yeah get me out of here</button>
+                    </Link>
                 </div>
-                : //this is the part with the actual game, likely gonna be the most difficult thing to code here
-                <div className="g-ready">
-                    <p className="g-gamernotice">The game has begun!</p>
-                    <button onClick={this.sendReady}>JOIN!!!!</button>
-                </div>
-                //sendReady here is gonna need to change to a way to change components to Playing
+                :
+                <Playing name={me.nickname}/>
                 }
-                <Link to="/">
-                    <button>yeah get me out of here</button>
-                </Link>
             </div>
         )
     }
