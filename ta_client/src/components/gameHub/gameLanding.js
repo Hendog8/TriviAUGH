@@ -33,10 +33,15 @@ class Game extends Component {
                     //used to pass name to the actual game for scorekeeping
             meTest: true, //use this to check a single if statement of the first gamer to join.
 
+            id: -1, //where the player is in the list
+                    //if -1, it's host.
+            playing: false, //if the component is Playing
+                            //man this is too many state elements
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
         this.startGame = this.startGame.bind(this);
+        this.playGame = this.playGame.bind(this);
     }
 
     componentDidMount(){
@@ -112,6 +117,14 @@ class Game extends Component {
         });
     }
 
+    componentDidUpdate(){
+        if(this.state.meTest){
+            if(this.state.gamers != null && this.state.gamers.length < this.state.id){
+                this.setState({ me: this.state.gamers[this.state.id], meTest: false });
+            }
+        }
+    }
+
     /*componentWillUpdate(){
         this.setState({ firstLoop: false });
     }*/
@@ -144,11 +157,11 @@ class Game extends Component {
         //this.setState({ additionalGamer: gamer });
         console.log("someone please send help");
         //if(this.state.meTest && !this.props.host){
-        if(this.state.me.nickname === "host" && !this.props.host){
+        /*if(this.state.me.nickname === "host" && !this.props.host){
             console.log("Metesting: " + gamer.nickname);
             this.setState({ me: {nickname: gamer.nickname, score: 0, selectedAnswers: []} });
         }
-        console.log("I am " + this.state.me.nickname);
+        console.log("I am " + this.state.me.nickname);*/
     }
 
     sendReady(){
@@ -164,6 +177,10 @@ class Game extends Component {
     startGame(){
         console.log("game start!");
         this.socket.emit("game_start", {gamers: this.state.gamers});
+    }
+    playGame(){
+        console.log("now playing");
+        this.setState({ playing: true });
     }
 
     render(){
@@ -243,7 +260,16 @@ class Game extends Component {
                     </Link>
                 </div>
                 :
-                <Playing name={me.nickname}/>
+                <div className="g-ready">
+                        {this.state.playing ?
+                            <div className="g-waiting">
+                                <p className="g-gamernotice">The game has begun!</p>
+                                <button onClick={this.playGame}>JOIN!!!!</button>
+                            </div>
+                        :
+                        <Playing nickname={this.me.nickname} id={this.id}/>
+                        }  
+                    </div>
                 }
             </div>
         )
