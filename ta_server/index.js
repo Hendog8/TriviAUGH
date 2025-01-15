@@ -44,8 +44,13 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("clean_slate", {gamers: data.gamers});
     });
 
-    socket.on ("player_update", (data) => {
+    socket.on("player_update", (data) => {
         console.log("player update sending");
         socket.broadcast.emit("player_updated", data);
     });
+
+    socket.on("game_start", (data) => {
+        console.log("starting game!");
+        socket.broadcast.emit("game_started", data);
+    })
 });
