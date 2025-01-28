@@ -15,19 +15,22 @@ class Playing extends Component {
 
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
-        this.setState({ nickname: this.props.name, id: this.props.id });
-
+        console.log(this.props);
+        this.setState({ nickname: this.props.nickname, id: this.props.id });
+        console.log(this.state);
         this.socket.on("player_updated", (data) => {
-            console.log("player update received");
-            this.setState({
-                nickname: data.nickname,
-                score: data.score,
-                selectedAnswers: data.selectedAnswers
-            });
+            if(data.nickname === this.state.nickname){
+                console.log("player update received");
+                this.setState({
+                    score: data.score,
+                    selectedAnswers: data.selectedAnswers
+                });
+            }
         });
     }
 
     componentDidUpdate(){
+        console.log("player updating");
         this.socket.emit('player_update', this.state);
     }
 
