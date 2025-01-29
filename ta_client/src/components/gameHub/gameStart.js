@@ -8,9 +8,10 @@ class Playing extends Component {
             id: 0,
             nickname: '',
             score: 0,
-            selectedAnswers: [],
+            selectedAnswers: [false, false, false, false],
 
         }
+        this.selectAnswer = this.selectAnswer.bind(this);
     }
 
     componentDidMount(){
@@ -45,19 +46,30 @@ class Playing extends Component {
         this.socket.emit('joining', this.state);
     }
 
+    selectAnswer(a){
+        if(this.state.selectedAnswers[a]){
+            console.log("deselecting answer " + a);
+        } else {
+            console.log("selecting answer " + a);
+        }
+        /*let newSelectedAnswers = this.state.selectedAnswers;
+        newSelectedAnswers[a] = !newSelectedAnswers[a];
+        this.setState({ selectedAnswers: newSelectedAnswers });*/
+    }
+
     render(){
-        let { nickname, score, selectedAnswers } = this.state;
+        let { id, nickname, score, selectedAnswers } = this.state;
         return(
             <div className='playingGame'>
-                <p className='p-name'>{nickname + '; ' + score}</p>
+                <p className='p-name'>{nickname + '; ' + id}</p>
                 <div className='p-questioning'>
                     <p classname='p-question'>this is the question</p>
                     {//if we even end up including the question on the client side, I mean it seems kinda inconvenient space-wise. I was thinking we should do it like Kahoot instead where the question only appears on the host's screen to the displayed to the rest of the game.
                     }
-                    <button className='p-a1'>this is the first answer</button>
-                    <button className='p-a2'>this is the second answer</button>
-                    <button className='p-a3'>this is the third answer</button>
-                    <button className='p-a4'>this is the fourth answer</button>
+                    <button className='p-a1' onClick={this.selectAnswer(0)}>this is the first answer</button>
+                    <button className='p-a2' onClick={this.selectAnswer(1)}>this is the second answer</button>
+                    <button className='p-a3' onClick={this.selectAnswer(2)}>this is the third answer</button>
+                    <button className='p-a4' onClick={this.selectAnswer(3)}>this is the fourth answer</button>
                 </div>
             </div>
         )
