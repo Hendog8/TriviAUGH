@@ -147,6 +147,9 @@ class Game extends Component {
 
     addGamer(n){
         console.log("A gamer is gaming " + n);
+        if(!this.props.host && id == -1){
+            this.setState({ id: this.state.gamers.length });   
+        }
         let gamer = {
             //id: i,
             nickname: n,
@@ -192,7 +195,7 @@ class Game extends Component {
     }
 
     render(){
-        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me} = this.state;
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me, id} = this.state;
         let {joinedbefore, host} = this.props;
         console.log("gamers: " + gamers);
         console.log("joinedBefore: " + joinedbefore);
@@ -212,7 +215,7 @@ class Game extends Component {
             }
         }
         console.log("gamerList: " + gamerList);
-        console.log("I'm " + me.nickname);
+        console.log("I'm " + gamerList[id].nickname);
         //let myName = me.nickname;
         //gamerList.push(additionalGamer);
         //we're so back
