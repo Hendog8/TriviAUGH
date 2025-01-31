@@ -123,6 +123,12 @@ class Game extends Component {
         this.socket.on("game_started", (data) => {
             this.setState({ started: true });
         });
+
+        /*if(!host && this.state.gamers.length == 0 && joinedbefore.length > 0){
+            console.log("testing adding " + joinedbefore[joinedbefore.length-1].nickname);
+            this.addGamer(joinedbefore[joinedbefore.length-1].nickname);
+            //joinedbefore.pop();
+        }*/
     }
 
     componentDidUpdate(){
@@ -147,7 +153,7 @@ class Game extends Component {
 
     addGamer(n){
         console.log("A gamer is gaming " + n);
-        if(!this.props.host && id == -1){
+        if(!this.props.host && this.state.id == -1){
             this.setState({ id: this.state.gamers.length });   
         }
         let gamer = {
@@ -215,7 +221,11 @@ class Game extends Component {
             }
         }
         console.log("gamerList: " + gamerList);
-        console.log("I'm " + gamerList[id].nickname);
+
+        if(!host && id !== -1){
+            me = gamerList[id];
+            console.log("I'm " + gamerList[id].nickname);
+        }
         //let myName = me.nickname;
         //gamerList.push(additionalGamer);
         //we're so back
@@ -278,7 +288,7 @@ class Game extends Component {
                                 <button onClick={this.playGame}>JOIN!!!!</button>
                             </div>
                         :
-                        <Playing nickname={"gamer test"} id={this.id}/>
+                        <Playing name={me.nickname} id={this.id}/>
                         }  
                     </div>
                 }
