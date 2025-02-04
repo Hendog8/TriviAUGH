@@ -56,4 +56,9 @@ io.on("connection", (socket) => {
         console.log("starting game!");
         socket.broadcast.emit("game_started", data);
     })
+
+    socket.on('selecting_answer', (data) => {
+        console.log(data.name + " is selecting answer " + data.answer);
+        socket.broadcast.emit('selected_answer', data);
+    });
 });
