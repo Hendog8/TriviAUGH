@@ -28,7 +28,7 @@ class Game extends Component {
                                  //use both? could work NO that's actually so much worse  
             firstLoop: true, //simple var that lets us make gamerList only once
                             //hopefully, at least
-            me: {nickname: "host", score: null, selectedAnswers: null}, 
+            me: {nickname: "host", score: 0, selectedAnswers: []}, 
                     //the gamer that created this instance.
                     //used to pass name to the actual game for scorekeeping
             meTest: true, //use this to check a single if statement of the first gamer to join.
@@ -46,7 +46,10 @@ class Game extends Component {
 
     componentDidMount(){
         let {joinedbefore, host} = this.props;
-        console.log("huh");
+        console.log("huh " + joinedbefore);
+        if(!host){
+            this.setState({ me: joinedbefore[joinedbefore.length-1], id: joinedbefore.length-1 });
+        }
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
         this.socket.on('host_joined', (data) => { //ain't running
@@ -57,6 +60,12 @@ class Game extends Component {
         //this.socket.emit("game_ready", {running: true});
         //this.sendReady();
         console.log("huh2");
+
+        /*if(!host && joinedbefore.length > 0){
+            this.setState({ me: joinedbefore[joinedbefore.length-1]});
+        }
+        console.log("on mount, I am " + this.state.me.nickname);*/
+
         this.socket.on('joined', (data) => {
             console.log("HELP, I'm dying!");
             
@@ -195,9 +204,15 @@ class Game extends Component {
         console.log("game start!");
         this.socket.emit("game_start", {gamers: this.state.gamers});
     }
+
     playGame(){
         console.log("now playing");
         this.setState({ playing: true });
+    }
+
+    nextQ(){
+        console.log("going next");
+        this.socket.emit('question_changing', {index: -1});
     }
 
     render(){
@@ -222,10 +237,28 @@ class Game extends Component {
         }
         console.log("gamerList: " + gamerList);
 
-        if(!host && id !== -1){
+        /*if(!host && me.nickname === "host"){
+            me = gamerList[gamerList.length-1]
+        } else*/ /*if(!host && id !== -1){
             me = gamerList[id];
             console.log("I'm " + gamerList[id].nickname);
+        } else if(!host && me.nickname === "host" && gamerList.length > 0){
+            console.log("Checking " + gamerList[gamerList.length - 1].nickname);
+        }*/
+        
+        if(id >= 0){
+            me = gamerList[id];
+        } else if(!host){
+            me = gamerList[gamerList.length-1];
+            this.setState({id: gamerList.length-1});
+            //improper pratice but given the if it won't cause looping.
+        } else {
+            console.log("THIS MUST BE HOST");
+            me = {nickname: "host", score: 0, selectedAnswers: []}
         }
+        console.log("I'm actually " + me.nickname);
+
+
         //let myName = me.nickname;
         //gamerList.push(additionalGamer);
         //we're so back
@@ -273,6 +306,7 @@ class Game extends Component {
                     <div className="g-ready">
                         <p className="g-gamernotice">The game has begun!</p>
                         <button onClick={this.sendReady}>JOIN!!!!</button>
+                        <button onClick={this.nextQ}>Next Question</button>
                     </div>
                     //sendReady here is gonna need to change to a way to change components to Playing
                     }
