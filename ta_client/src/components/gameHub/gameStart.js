@@ -16,6 +16,7 @@ class Playing extends Component {
 
         }
         this.selectAnswer = this.selectAnswer.bind(this);
+        this.submitAnswers = this.submitAnswers.bind(this);
     }
 
 
@@ -36,29 +37,33 @@ class Playing extends Component {
 
         this.socket.on('question_change', (data) => {
             if(data.index === -1){
-                this.setState({ questionNum: questionNum++});
+                this.setState({ questionNum: this.state.questionNum++});
             } else {
                 //allows for the potential to use this one method to either increment the question or select a specific question
                 this.setState({ questionNum: data.index });
             }
-        })
+        });
+
+        
 
         /*this.socket.on("player_updated", (data) => {
             if(data.nickname === this.state.nickname){
                 console.log("player update received");
-                this.setState({
-                    score: data.score,
-                    selectedAnswers: data.selectedAnswers
-                });
+                if(data.score !== this.state.score || data.selectedAnswers !== this.state.selectedAnswers){
+                    this.setState({
+                        score: data.score,
+                        selectedAnswers: data.selectedAnswers
+                    });
+                }
             }
         });*/
     }
 
 
-    componentDidUpdate(){
+    /*componentDidUpdate(){
         console.log("player updating");
         this.socket.emit('player_update', this.state);
-    }
+    }*/
 
 
     /*setName(newName){
@@ -103,6 +108,10 @@ class Playing extends Component {
         this.setState({ selectedAnswers: newSelectedAnswers });*/
     }
 
+    submitAnswers(){
+        console.log("answer submission");
+        this.socket.emit('submitting_answers', { name: this.state.nickname, answers: this.state.selectedAnswers });
+    }
 
     render(){
         let { id, nickname, score, selectedAnswers } = this.state;
@@ -117,7 +126,10 @@ class Playing extends Component {
                     <button className='p-a2' onClick={this.selectAnswer}>this is the second answer</button>
                     <button className='p-a3' onClick={this.selectAnswer}>this is the third answer</button>
                     <button className='p-a4' onClick={this.selectAnswer}>this is the fourth answer</button>
+                    <br />
+                    <button className='p-submit' onClick={this.submitAnswers}>submit</button>
                 </div>
+
             </div>
         )
     }
