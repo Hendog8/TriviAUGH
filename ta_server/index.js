@@ -15,6 +15,8 @@ server.listen(4000, () => { console.log("listening on *:4000");});
 
 io.on("connection", (socket) => {
 
+    let playerNum = -1;
+
     console.log("you are being helped! :cool:")
 
     socket.on("sent_message", (data) => {
@@ -25,8 +27,9 @@ io.on("connection", (socket) => {
     });
 
     socket.on("joining", (data) => {
-        console.log(data);
-        socket.broadcast.emit('joined', {name:data.message});
+        playerNum++;
+        console.log(data + " " + playerNum);
+        socket.broadcast.emit('joined', {name:data.message, id:playerNum});
     });
 
     socket.on("host_joining", (data) => {
@@ -42,5 +45,30 @@ io.on("connection", (socket) => {
     socket.on("game_ended", (data) => {
         console.log("ending");
         socket.broadcast.emit("clean_slate", {gamers: data.gamers});
+    });
+
+    socket.on("player_update", (data) => {
+        console.log("player update sending");
+        socket.broadcast.emit("player_updated", data);
+    });
+
+    socket.on("game_start", (data) => {
+        console.log("starting game!");
+        socket.broadcast.emit("game_started", data);
+    })
+
+    socket.on('selecting_answer', (data) => {
+        console.log(data.name + " is selecting answer " + data.answer);
+        socket.broadcast.emit('selected_answer', data);
+    });
+
+    socket.on('question_changing', (data) => {
+        console.log("question changing by " + data.index);
+        socket.broadcast.emit('question_change', (data));
+    });
+
+    socket.on('submitting_answers', (data) => {
+        console.log(data.name + " is submitting answers");
+        socket.broadcast.emit('answers_submitted', data);
     });
 });

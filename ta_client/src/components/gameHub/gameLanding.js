@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Playing from './gameStart';
 //import { connect } from 'react-redux'; what is redux?????
 
 
@@ -27,19 +28,31 @@ class Game extends Component {
                                  //use both? could work NO that's actually so much worse  
             firstLoop: true, //simple var that lets us make gamerList only once
                             //hopefully, at least
-            me: {nickname: "host", score: null, selectedAnswers: null}, 
+            me: {nickname: "host", score: 0, selectedAnswers: []}, 
                     //the gamer that created this instance.
                     //used to pass name to the actual game for scorekeeping
             meTest: true, //use this to check a single if statement of the first gamer to join.
 
+            id: -1, //where the player is in the list
+                    //if -1, it's host.
+            playing: false, //if the component is Playing
+                            //man this is too many state elements
+            scoreTracker: 0, //tracks which score player should get
+                             //scores along a negative square root graph, arbitrarily -45sqrt(x) + 500 for now
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
+        this.startGame = this.startGame.bind(this);
+        this.playGame = this.playGame.bind(this);
+        this.nextQ = this.nextQ.bind(this);
     }
 
     componentDidMount(){
         let {joinedbefore, host} = this.props;
-        console.log("huh");
+        console.log("huh " + joinedbefore);
+        if(!host){
+            this.setState({ me: joinedbefore[joinedbefore.length-1], id: joinedbefore.length-1 });
+        }
         //axios may actually be unnecessary
         this.socket = io.connect('http://localhost:4000');
         this.socket.on('host_joined', (data) => { //ain't running
@@ -50,22 +63,50 @@ class Game extends Component {
         //this.socket.emit("game_ready", {running: true});
         //this.sendReady();
         console.log("huh2");
+
+        /*if(!host && joinedbefore.length > 0){
+            this.setState({ me: joinedbefore[joinedbefore.length-1]});
+        }
+        console.log("on mount, I am " + this.state.me.nickname);*/
+
         this.socket.on('joined', (data) => {
             console.log("HELP, I'm dying!");
+            
+            console.log("host & id check: " + host + ", " + this.state.id);
+            if(!host && this.state.id == -1){
+                console.log("Should be number " + data.id);
+                this.setState({ id: data.id });
+                console.log("Number " + this.state.id);
+            }
+            
             console.log("fujangpuionduivnasuidnvaiundvioasneuivansei");
-            this.addGamer(data.name);
+            let newTest = true;
+            for(const g of this.state.gamers){
+                if(g.nickname === data.name){
+                    console.log(data.name + " is already taken");
+                    console.log(g.nickname + " is also already taken");
+                    newTest = false;
+                }
+            }
+            if(newTest){
+                this.addGamer(data.name);
+                if(host){
+                    console.log("trying to add " + data.name + " one more time");
+                    this.socket.emit("joining", {message: data.name});
+                }
+            }
         });
 
         let oldGamers = [];
         //console.log(this.props.accepting);
         //if(this.props.accepting){
-            if(this.state.meTest && !host){
-                console.log("AUIONAOINVUOINS " + joinedbefore.toString);
+            /*if(this.state.meTest && !host){
+                console.log("AUIONAOINVUOINS " + joinedbefore.toString());
                 this.setState({
                     meTest: false,
                     //me: joinedbefore[joinedbefore.length-1]
                 });
-            }
+            }*/
             for(let x = 0; x < joinedbefore.length; x++){
                 oldGamers.push(joinedbefore[x]);
                 /*if(this.state.meTest && x == joinedbefore.length-1 && !host){
@@ -91,6 +132,31 @@ class Game extends Component {
         /*if(!this.props.host){
             this.setState({ me: oldGamers[oldGamers.length-1] });
         }*/
+        this.socket.on("game_started", (data) => {
+            this.setState({ started: true });
+        });
+
+        this.socket.on('answers_submitted', (data) => {
+            console.log(data.name + " answers received");
+            //whoops forgot I need to actually check which answers are right lmao
+            let score = -45 * Math.sqrt(this.state.scoreTracker) + 500;
+            this.setState({ scoreTracker: this.state.scoreTracker++ });
+            //reset to 0 when changing questions
+        });
+
+        /*if(!host && this.state.gamers.length == 0 && joinedbefore.length > 0){
+            console.log("testing adding " + joinedbefore[joinedbefore.length-1].nickname);
+            this.addGamer(joinedbefore[joinedbefore.length-1].nickname);
+            //joinedbefore.pop();
+        }*/
+    }
+
+    componentDidUpdate(){
+        if(this.state.meTest){
+            if(this.state.gamers != null && this.state.gamers.length < this.state.id){
+                this.setState({ me: this.state.gamers[this.state.id], meTest: false });
+            }
+        }
     }
 
     /*componentWillUpdate(){
@@ -107,6 +173,9 @@ class Game extends Component {
 
     addGamer(n){
         console.log("A gamer is gaming " + n);
+        if(!this.props.host && this.state.id == -1){
+            this.setState({ id: this.state.gamers.length });   
+        }
         let gamer = {
             //id: i,
             nickname: n,
@@ -125,11 +194,11 @@ class Game extends Component {
         //this.setState({ additionalGamer: gamer });
         console.log("someone please send help");
         //if(this.state.meTest && !this.props.host){
-        if(this.state.me.nickname === "host"){
+        /*if(this.state.me.nickname === "host" && !this.props.host){
             console.log("Metesting: " + gamer.nickname);
-            this.setState({ me: gamer });
+            this.setState({ me: {nickname: gamer.nickname, score: 0, selectedAnswers: []} });
         }
-        console.log("I am " + this.state.me.nickname);
+        console.log("I am " + this.state.me.nickname);*/
     }
 
     sendReady(){
@@ -142,8 +211,23 @@ class Game extends Component {
         this.socket.emit("game_ended", {gamers: []});
     }
 
+    startGame(){
+        console.log("game start!");
+        this.socket.emit("game_start", {gamers: this.state.gamers});
+    }
+
+    playGame(){
+        console.log("now playing");
+        this.setState({ playing: true });
+    }
+
+    nextQ(){
+        console.log("going next");
+        this.socket.emit('question_changing', {index: -1});
+    }
+
     render(){
-        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me} = this.state;
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me, id} = this.state;
         let {joinedbefore, host} = this.props;
         console.log("gamers: " + gamers);
         console.log("joinedBefore: " + joinedbefore);
@@ -163,7 +247,29 @@ class Game extends Component {
             }
         }
         console.log("gamerList: " + gamerList);
-        console.log("I'm " + me.nickname);
+
+        /*if(!host && me.nickname === "host"){
+            me = gamerList[gamerList.length-1]
+        } else*/ /*if(!host && id !== -1){
+            me = gamerList[id];
+            console.log("I'm " + gamerList[id].nickname);
+        } else if(!host && me.nickname === "host" && gamerList.length > 0){
+            console.log("Checking " + gamerList[gamerList.length - 1].nickname);
+        }*/
+        
+        if(id >= 0){
+            me = gamerList[id];
+        } else if(!host){
+            me = gamerList[gamerList.length-1];
+            this.setState({id: gamerList.length-1});
+            //improper pratice but given the if it won't cause looping.
+        } else {
+            console.log("THIS MUST BE HOST");
+            me = {nickname: "host", score: 0, selectedAnswers: []}
+        }
+        //console.log("I'm actually " + me.nickname);
+
+
         //let myName = me.nickname;
         //gamerList.push(additionalGamer);
         //we're so back
@@ -186,31 +292,51 @@ class Game extends Component {
         }*/
         return(
             <div className="game">
-                { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
-                <div className="g-hub">
-                    { host ? //host's page
-                        <div className="g-hostview">
-                            <p className="g-hostcheck">you're me, right?</p>
-                        </div>
-                    : //players' page
-                        <div className="g-gamerview">
-                            <p className="g-gamercheck">and you aren't. You're {"myName"}</p>
-                        </div>
+
+                {host || !started ?
+                <div className="g-waiting">
+                    { !started ? //need to display player usernames, maybe game settings (time, number of questions, etc.), and need a big ol start button of course
+                    <div className="g-hub">
+                        { host ? //host's page
+                            <div className="g-hostview">
+                                <p className="g-hostcheck">you're me, right?</p>
+                                <button classname="g-hoststart" onClick={this.startGame}>if so, you can START GAME!</button>
+                            </div>
+                        : //players' page
+                            <div className="g-gamerview">
+                                <p className="g-gamercheck">and you aren't. You're {me.nickname}</p>
+                            </div>
+                        }
+                        { gamerList.map((gamer, index) => (
+                            <li key={index}>{gamer.nickname}</li>
+                        ))}
+                        <p>wassup gang</p>
+                        <button onClick={this.sendReady}>allow players to join</button>
+                    </div>
+                    : //this is the part with the actual game, likely gonna be the most difficult thing to code here
+                    <div className="g-ready">
+                        <p className="g-gamernotice">The game has begun!</p>
+                        <button onClick={this.sendReady}>JOIN!!!!</button>
+                        <button onClick={this.nextQ}>Next Question</button>
+                    </div>
+                    //sendReady here is gonna need to change to a way to change components to Playing
                     }
-                    { gamerList.map((gamer, index) => (
-                        <li key={index}>{gamer.nickname}</li>
-                    ))}
-                    <p>wassup gang</p>
-                    <button onClick={this.sendReady}>allow players to join</button>
+                    <Link to="/">
+                        <button>yeah get me out of here</button>
+                    </Link>
                 </div>
-                : //this is the part with the actual game, likely gonna be the most difficult thing to code here
-                <div className="g-gaming">
-                    <button onClick={this.sendReady}>allow players to join</button>
-                </div>
+                :
+                <div className="g-ready">
+                        {this.state.playing ?
+                            <div className="g-waiting">
+                                <p className="g-gamernotice">The game has begun!</p>
+                                <button onClick={this.playGame}>JOIN!!!!</button>
+                            </div>
+                        :
+                        <Playing name={me.nickname} id={this.id}/>
+                        }  
+                    </div>
                 }
-                <Link to="/">
-                    <button>yeah get me out of here</button>
-                </Link>
             </div>
         )
     }

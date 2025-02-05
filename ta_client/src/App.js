@@ -3,7 +3,8 @@ import React, { Component, useEffect } from "react";
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import io from "socket.io-client";
 import Home from './components/home/Home';
-import Game from './components/gameHub/game'
+import Game from './components/gameHub/gameLanding';
+import Playing from './components/gameHub/gameStart';
 
 const socket = io.connect("http://localhost:4000");
 
@@ -54,7 +55,17 @@ function App() {
   socket.on('joined', (data) => {
     console.log("HELP");
     hosting = false;
-    addGamer(data.name);
+    let newTest = true;
+    for(const g of gamers){
+      if(g.nickname === data.name){
+        //console.log(data.name + " is already taken");
+        //console.log(g.nickname + " is also already taken");
+        newTest = false;
+      }
+    }
+    if(newTest){
+      addGamer(data.name);
+    }
   });
 
   socket.on('host_joined', (data) => {
@@ -76,12 +87,12 @@ function App() {
             :
             <Route path = '/' Component={() => (<Home joiner={false} />)} />
           }
-          { started ?
+          { !started ?
             <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
-            :
-            <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
+            ://allows a change to the component if the game is running, letting us not have to code the whole game and the landing in the same file
+            <Route path = '/game/game' Component = {() => (<Playing/>)} />
           }
-          { started ?
+          { !started ?
             <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
             :
             <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
