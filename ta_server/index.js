@@ -65,5 +65,10 @@ io.on("connection", (socket) => {
     socket.on('question_changing', (data) => {
         console.log("question changing by " + data.index);
         socket.broadcast.emit('question_change', (data));
-    })
+    });
+
+    socket.on('submitting_answers', (data) => {
+        console.log(data.name + " is submitting answers");
+        socket.broadcast.emit('answers_submitted', data);
+    });
 });
