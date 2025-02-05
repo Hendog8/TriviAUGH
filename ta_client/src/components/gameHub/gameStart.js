@@ -10,7 +10,9 @@ class Playing extends Component {
             nickname: '',
             score: 0,
             selectedAnswers: [false, false, false, false],
-
+            questions: [{query:"What?", correct:["who", "how"], incorrect:["where", "why"]},
+                        {query: "which of the following songs place in Mario Judah's top 5 most streamed?", correct:["die very rough", "miss the rage"], incorrect:["all red", "sky"]}], 
+            questionNum: 0, 
 
         }
         this.selectAnswer = this.selectAnswer.bind(this);
@@ -31,6 +33,15 @@ class Playing extends Component {
                 this.setState({ selectedAnswers: newAnswers });
             }
         });
+
+        this.socket.on('question_change', (data) => {
+            if(data.index === -1){
+                this.setState({ questionNum: questionNum++});
+            } else {
+                //allows for the potential to use this one method to either increment the question or select a specific question
+                this.setState({ questionNum: data.index });
+            }
+        })
 
         /*this.socket.on("player_updated", (data) => {
             if(data.nickname === this.state.nickname){
