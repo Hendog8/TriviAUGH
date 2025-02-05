@@ -37,11 +37,14 @@ class Game extends Component {
                     //if -1, it's host.
             playing: false, //if the component is Playing
                             //man this is too many state elements
+            scoreTracker: 0, //tracks which score player should get
+                             //scores along a negative square root graph, arbitrarily -45sqrt(x) + 500 for now
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
         this.startGame = this.startGame.bind(this);
         this.playGame = this.playGame.bind(this);
+        this.nextQ = this.nextQ.bind(this);
     }
 
     componentDidMount(){
@@ -131,6 +134,14 @@ class Game extends Component {
         }*/
         this.socket.on("game_started", (data) => {
             this.setState({ started: true });
+        });
+
+        this.socket.on('answers_submitted', (data) => {
+            console.log(data.name + " answers received");
+            //whoops forgot I need to actually check which answers are right lmao
+            let score = -45 * Math.sqrt(this.state.scoreTracker) + 500;
+            this.setState({ scoreTracker: this.state.scoreTracker++ });
+            //reset to 0 when changing questions
         });
 
         /*if(!host && this.state.gamers.length == 0 && joinedbefore.length > 0){
@@ -256,7 +267,7 @@ class Game extends Component {
             console.log("THIS MUST BE HOST");
             me = {nickname: "host", score: 0, selectedAnswers: []}
         }
-        console.log("I'm actually " + me.nickname);
+        //console.log("I'm actually " + me.nickname);
 
 
         //let myName = me.nickname;
