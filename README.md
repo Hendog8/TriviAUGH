@@ -17,3 +17,7 @@ much as it's given back to me.
 
 Thank you for reading, and please enjoy your tour of the still-in-progress TriviAUGH. Please feel free to check back in 
 every few weeks for further updates.
+
+(Please pay the absurdist testing messages and logs no mind. They're simply the easiest way to grab my attention when 
+sifting through the stream of logs. Everything'll be much neater by the time TriviAUGH is actually released and housed 
+on a permanent site.)
