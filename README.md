@@ -11,9 +11,9 @@ answer NOT selected will earn points, and categorizing either incorrectly will l
 selecting every answer to guarantee you select the correct one(s).
 
 Everything here not automatically created through bootstrapping with React or Node.js or imported as a package is of my own 
-creation. This project has not only been a joy to code, but has wildly expanded my knowledge of Javascript and HTML, and 
-for that I cannot be more grateful. I hope this project, when finished, will bring others (my close friends especially) as 
-much as it's brought me.
+creation. This project has not only been a joy to code so far, but has wildly expanded my knowledge of Javascript and HTML, 
+and for that I cannot be more grateful. I hope that it, when finished, will give to others (my close friends especially) as 
+much as it's given back to me.
 
 Thank you for reading, and please enjoy your tour of the still-in-progress TriviAUGH. Please feel free to check back in 
 every few weeks for further updates.
