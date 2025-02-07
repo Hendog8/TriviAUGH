@@ -10,8 +10,12 @@ class Playing extends Component {
             nickname: '',
             score: 0,
             selectedAnswers: [false, false, false, false],
-            questions: [{query:"What?", correct:["who", "how"], incorrect:["where", "why"]},
-                        {query: "which of the following songs place in Mario Judah's top 5 most streamed?", correct:["die very rough", "miss the rage"], incorrect:["all red", "sky"]}], 
+            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"] },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"] },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"] },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"] },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"] },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"] },], 
             questionNum: 0, 
 
         }
@@ -36,6 +40,7 @@ class Playing extends Component {
         });
 
         this.socket.on('question_change', (data) => {
+            console.log("question changed " + data.index);
             if(data.index === -1){
                 this.setState({ questionNum: this.state.questionNum++});
             } else {
@@ -114,18 +119,19 @@ class Playing extends Component {
     }
 
     render(){
-        let { id, nickname, score, selectedAnswers } = this.state;
+        let { id, nickname, score, selectedAnswers, questions, questionNum } = this.state;
+
         return(
             <div className='playingGame'>
                 <p className='p-name'>{nickname + '; ' + id}</p>
                 <div className='p-questioning'>
-                    <p classname='p-question'>this is the question</p>
+                    <p className='p-question'>{questions[questionNum].query}</p>
                     {//if we even end up including the question on the client side, I mean it seems kinda inconvenient space-wise. I was thinking we should do it like Kahoot instead where the question only appears on the host's screen to the displayed to the rest of the game.
                     }
-                    <button className='p-a1' onClick={this.selectAnswer}>this is the first answer</button>
-                    <button className='p-a2' onClick={this.selectAnswer}>this is the second answer</button>
-                    <button className='p-a3' onClick={this.selectAnswer}>this is the third answer</button>
-                    <button className='p-a4' onClick={this.selectAnswer}>this is the fourth answer</button>
+                    <button className='p-a1' onClick={this.selectAnswer}>{questions[questionNum].ans[0]}</button>
+                    <button className='p-a2' onClick={this.selectAnswer}>{questions[questionNum].ans[1]}</button>
+                    <button className='p-a3' onClick={this.selectAnswer}>{questions[questionNum].ans[2]}</button>
+                    <button className='p-a4' onClick={this.selectAnswer}>{questions[questionNum].ans[3]}</button>
                     <br />
                     <button className='p-submit' onClick={this.submitAnswers}>submit</button>
                 </div>
