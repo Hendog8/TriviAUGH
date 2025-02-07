@@ -12,8 +12,12 @@ class Game extends Component {
         this.state = {
             gamers: [], //array of player objects
                         //includes name, score, and an array of answers for the current question
-            questions: [{query:"What?", correct:["who", "how"], incorrect:["where", "why"]},
-                        {query: "which of the following songs place in Mario Judah's top 5 most streamed?", correct:["die very rough", "miss the rage"], incorrect:["all red", "sky"]}], 
+                        questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"] },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"] },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"] },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"] },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"] },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"] },], 
                         //array of question objects 
                         //each includes question, correct, and incorrect answers
             questionNum: 0, //index of current question in array
@@ -39,12 +43,16 @@ class Game extends Component {
                             //man this is too many state elements
             scoreTracker: 0, //tracks which score player should get
                              //scores along a negative square root graph, arbitrarily -45sqrt(x) + 500 for now
+            questionNav: 0, //question number to navigate to with toQ
+                            //look for a simpler method to do this
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
         this.startGame = this.startGame.bind(this);
         this.playGame = this.playGame.bind(this);
         this.nextQ = this.nextQ.bind(this);
+        this.handleQ = this.handleQ.bind(this);
+        this.toQ = this.toQ.bind(this);
     }
 
     componentDidMount(){
@@ -226,6 +234,15 @@ class Game extends Component {
         this.socket.emit('question_changing', {index: -1});
     }
 
+    handleQ(e){
+        this.setState({ questionNav: e.target.value });
+    }
+    
+    toQ(){
+        console.log("going to " + this.state.questionNav);
+        this.socket.emit('question_changing', {index: this.state.questionNav});
+    }
+
     render(){
         let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me, id} = this.state;
         let {joinedbefore, host} = this.props;
@@ -318,6 +335,9 @@ class Game extends Component {
                         <p className="g-gamernotice">The game has begun!</p>
                         <button onClick={this.sendReady}>JOIN!!!!</button>
                         <button onClick={this.nextQ}>Next Question</button>
+                        <br />
+                        <button onClick={this.toQ}>Go to Question</button>
+                        <input type="number" onChange={this.handleQ} />
                     </div>
                     //sendReady here is gonna need to change to a way to change components to Playing
                     }
