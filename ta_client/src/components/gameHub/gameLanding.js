@@ -1,9 +1,7 @@
 import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import Playing from './gameStart';
-//import { connect } from 'react-redux'; what is redux?????
 
 
 class Game extends Component {
@@ -152,6 +150,17 @@ class Game extends Component {
             //reset to 0 when changing questions
         });
 
+        this.socket.on('question_change', (data) => {
+            console.log("question changed " + data.index);
+            if(data.index === -1){
+                this.setState({ questionNum: this.state.questionNum++});
+            } else {
+                //allows for the potential to use this one method to either increment the question or select a specific question
+                this.setState({ questionNum: data.index });
+            }
+            this.setState({ scoreTracker: 0 });
+        });
+
         /*if(!host && this.state.gamers.length == 0 && joinedbefore.length > 0){
             console.log("testing adding " + joinedbefore[joinedbefore.length-1].nickname);
             this.addGamer(joinedbefore[joinedbefore.length-1].nickname);
@@ -276,15 +285,20 @@ class Game extends Component {
         
         if(id >= 0){
             me = gamerList[id];
-        } else if(!host){
+        } else if(!host && gamerList.length > 0){
             me = gamerList[gamerList.length-1];
             this.setState({id: gamerList.length-1});
             //improper pratice but given the if it won't cause looping.
+            //still want to remove any setState from render though
+        } else if(!host && gamerList.length === 0){
+            console.log("there's some kinda bug happening here");
+            //okay so gamerList just isn't filling soon enough.
+            //employ a waiting screen?
         } else {
             console.log("THIS MUST BE HOST");
             me = {nickname: "host", score: 0, selectedAnswers: []}
         }
-        //console.log("I'm actually " + me.nickname);
+        console.log("I'm actually " + me.nickname);
 
 
         //let myName = me.nickname;
