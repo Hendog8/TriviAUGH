@@ -54,6 +54,8 @@ class Game extends Component {
     }
 
     componentDidMount(){
+        console.log("this component is hopefully still " + this.props.tempID);
+
         let {joinedbefore, host} = this.props;
         console.log("huh " + joinedbefore);
         if(!host){
