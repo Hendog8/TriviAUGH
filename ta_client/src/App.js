@@ -15,7 +15,9 @@ function App() {
   var gaming = false; //I think this is super unnecessary
   var hosting = false; //this is also probably unnecessary
   var started = false;
-  var myself = {};
+  var myself = Math.floor(Math.random()*100000000) + ''; //temp id, just here to ensure that I can track an instance.
+               //should be pretty secure but you just can't be 100% certain so I'd like to switch to the counting later
+               //plus the counting allows for tracking in player arrays which is mad convenient
 
   function sendMessage(){
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
@@ -83,19 +85,19 @@ function App() {
       <BrowserRouter>
         <Routes>
           { running ? //learning how to pass props
-            <Route path = '/' Component={() => (<Home joiner={true} />)} />
+            <Route path = '/' Component={() => (<Home joiner={true} tempID={myself}/>)} />
             :
-            <Route path = '/' Component={() => (<Home joiner={false} />)} />
+            <Route path = '/' Component={() => (<Home joiner={false} tempID={myself}/>)} />
           }
           { !started ?
-            <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} />)} />
+            <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} tempID={myself}/>)} />
             ://allows a change to the component if the game is running, letting us not have to code the whole game and the landing in the same file
-            <Route path = '/game/game' Component = {() => (<Playing/>)} />
+            <Route path = '/game/game' Component = {() => (<Playing tempID={myself}/>)} />
           }
           { !started ?
-            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
+            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} tempID={myself}/>)} />
             :
-            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} />)} />
+            <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} tempID={myself}/>)} />
           }
         </Routes>
       </BrowserRouter>
