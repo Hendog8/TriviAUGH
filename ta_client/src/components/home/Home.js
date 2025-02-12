@@ -25,6 +25,7 @@ class Home extends Component{
     }
 
     componentDidMount(){
+        console.log("this instance is " + this.props.tempID);
         this.socket = io.connect('http://localhost:4000');
                                 //REPLACE WITH REAL SERVER ADDRESS WHEN DEPLOYING
         /*this.socket.on("received_message", (data) => {
