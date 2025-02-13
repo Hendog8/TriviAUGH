@@ -2,8 +2,8 @@ import React from 'react';
 import io from 'socket.io-client';
 
 class Timer extends Component{
-    constructor(props){
-        super(props);
+    constructor(){
+        super();
         this.state = {
             length: this.props.time,
                    //maybe this works? unsure about props within constructors
@@ -37,3 +37,5 @@ class Timer extends Component{
         );
     }
 }
+
+export default Timer;
