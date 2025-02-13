@@ -78,6 +78,17 @@ class Game extends Component {
         console.log("on mount, I am " + this.state.me.nickname);*/
 
         this.socket.on('joined', (data) => {
+            console.log("new joined test");
+
+            if(this.props.tempID === data.check){
+                console.log(data.name + " is me for SURE");
+
+                this.setState({ me: {nickname: data.name, score: 0, selectedAnswers: []} });
+            }
+            this.addGamer(data.name);
+        });
+        
+        /*this.socket.on('joined', (data) => {
             console.log("HELP, I'm dying!");
             
             console.log("host & id check: " + host + ", " + this.state.id);
@@ -103,7 +114,7 @@ class Game extends Component {
                     this.socket.emit("joining", {message: data.name});
                 }
             }
-        });
+        });*/
 
         let oldGamers = [];
         //console.log(this.props.accepting);
@@ -170,13 +181,13 @@ class Game extends Component {
         }*/
     }
 
-    componentDidUpdate(){
+    /*componentDidUpdate(){
         if(this.state.meTest){
             if(this.state.gamers != null && this.state.gamers.length < this.state.id){
                 this.setState({ me: this.state.gamers[this.state.id], meTest: false });
             }
         }
-    }
+    }*/
 
     /*componentWillUpdate(){
         this.setState({ firstLoop: false });
@@ -285,7 +296,7 @@ class Game extends Component {
             console.log("Checking " + gamerList[gamerList.length - 1].nickname);
         }*/
         
-        if(id >= 0){
+        /*if(id >= 0){
             me = gamerList[id];
         } else if(!host && gamerList.length > 0){
             me = gamerList[gamerList.length-1];
@@ -300,7 +311,7 @@ class Game extends Component {
             console.log("THIS MUST BE HOST");
             me = {nickname: "host", score: 0, selectedAnswers: []}
         }
-        console.log("I'm actually " + me.nickname);
+        console.log("I'm actually " + me.nickname);*/
 
 
         //let myName = me.nickname;
