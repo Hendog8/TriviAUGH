@@ -68,6 +68,10 @@ function App() {
     if(newTest){
       addGamer(data.name);
     }
+
+    if(data.check === myself){
+      console.log(data.name + " is me");
+    }
   });
 
   socket.on('host_joined', (data) => {
