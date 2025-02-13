@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
     socket.on("joining", (data) => {
         playerNum++;
         console.log(data + " " + playerNum);
-        socket.broadcast.emit('joined', {name:data.message, id:playerNum});
+        socket.broadcast.emit('joined', {name:data.message, id:playerNum, check:data.tempID});
     });
 
     socket.on("host_joining", (data) => {
@@ -70,5 +70,10 @@ io.on("connection", (socket) => {
     socket.on('submitting_answers', (data) => {
         console.log(data.name + " is submitting answers");
         socket.broadcast.emit('answers_submitted', data);
+    });
+
+    socket.on('timer_finished', (data) => {
+        console.log("time up");
+        socket.broadcast.emit('time_up', data);
     });
 });
