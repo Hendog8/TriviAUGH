@@ -1,21 +1,21 @@
-import React from 'react';
+import React, { Component } from 'react';
 import io from 'socket.io-client';
 
-class Timer extends Component{
+class Timer extends Component {
     constructor(){
         super();
         this.state = {
-            length: this.props.time,
+            length: 0,
                    //maybe this works? unsure about props within constructors
-            interval: null,
         }
+        this.interval = null;
     }
 
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
-        this.setState({ interval: setInteveral(() => {
-            this.setState({ length: this.state.length - 0.1 });
-        }, 100) });
+        this.interval = setInterval(() => {
+            this.setState(prevState => ({ length: prevState.length + 1 }));
+        }, 1000);
     }
 
     componentWillUnmount(){
@@ -23,7 +23,7 @@ class Timer extends Component{
     }
 
     componentDidUpdate(){
-        if(this.state.length <= 0){
+        if(this.state.length == this.props.time){
             this.setState({ interval: clearInterval(this.state.interval) });
             this.socket.emit('timer_finished', this.props.tempID);
         }
@@ -32,7 +32,7 @@ class Timer extends Component{
     render(){
         return(
             <div>
-                <p>{this.state.length}</p>
+                <p>{10 - this.state.length}</p>
             </div>
         );
     }
