@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
+import Waiting from './Waiting';
 
 class Home extends Component{
     constructor(){
@@ -13,6 +14,7 @@ class Home extends Component{
             key: "pword",
             pass: "", //this is the container for password guesses
             nick: "", //nickname, of course
+            waiting: false, //to check if we're rendering a waiting screen or nah
         }
         this.goHost = this.goHost.bind(this);
         this.goGame = this.goGame.bind(this);
@@ -62,7 +64,8 @@ class Home extends Component{
 
     joinGame(){
         console.log("JOINING!");
-        this.socket.emit("joining", {message: this.state.nick});
+        this.socket.emit("joining", {message: this.state.nick, check: this.props.tempID});
+        this.setState({ waiting: true });
     }
 
     notJoin(){
@@ -84,57 +87,63 @@ class Home extends Component{
         let {joiner} = this.props;
         console.log("Joinable: " + joinable + " Joiner: " + joiner);
         return(
-            <div className="h-hub">
-                {
-                    !host && !gamer
-                    ?
-                    <div className="h-land">
-                        <p className="h-choice">How would you like to join triviAUGHHHHHH?</p>
-                        <button className="h-hoster" onClick={this.goHost}>I'd like to host.</button>
-                        <button className="h-gamerer" onClick={this.goGame}>I'd like to play.</button>
-                        <br />
-                        <button onClick={this.emitTest}>SOS2</button>
-                    </div>
-                    :
-                        host ?
-                        <div className="h-password">
-                            { this.state.pass !== key
-                                ?
-                                <p className="h-p-waiting">Enter the SECRET PASSWORD:</p>
-                                :
-                                <div className="h-p-correct">
-                                    <p> Correct. Welcome back, Thomas.</p>
-                                    <Link to='/game/host'>
-                                        <button onClick={this.hostJoin}>GO!</button>
-                                    </Link>
-                                </div>
-                            }
-                            <input type="password" value={this.state.pass} onChange={this.handlePass} />
+            <div className="homeScreen">
+            {
+            this.state.waiting 
+            ?
+                <Waiting tempID={this.props.tempID} />
+            :
+                <div className="h-hub">
+                    {
+                        !host && !gamer
+                        ?
+                        <div className="h-land">
+                            <p className="h-choice">How would you like to join triviAUGHHHHHH?</p>
+                            <button className="h-hoster" onClick={this.goHost}>I'd like to host.</button>
+                            <button className="h-gamerer" onClick={this.goGame}>I'd like to play.</button>
+                            <br />
+                            <button onClick={this.emitTest}>SOS2</button>
                         </div>
                         :
-                        <div className="h-nickname">
-                            <p>Enter your nickname here:</p>
-                            <input type="text" value={this.state.nick} onChange={this.handleNick} />
-                            {joinable || joiner ?
-                                <Link to="/game/game">
-                                    <button onClick={this.joinGame}>GO!</button>
-                                </Link>
-                                :
-                                <div className="h-unjoinable">
-                                    <button onClick={this.notJoin}>GO!</button>
-                                    {warning ?
-                                        <div className="h-warning">
-                                            <p>There are no triviAUGH games currrently running, so you're unable to join.</p>
-                                        </div>
+                            host ?
+                            <div className="h-password">
+                                { this.state.pass !== key
+                                    ?
+                                    <p className="h-p-waiting">Enter the SECRET PASSWORD:</p>
                                     :
-                                        <div className="h-warning">
-                                            <p>hey gang</p>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                }
+                                    <div className="h-p-correct">
+                                        <p> Correct. Welcome back, Thomas.</p>
+                                        <Link to='/game/host'>
+                                            <button onClick={this.hostJoin}>GO!</button>
+                                        </Link>
+                                    </div>
+                                }
+                                <input type="password" value={this.state.pass} onChange={this.handlePass} />
+                            </div>
+                            :
+                            <div className="h-nickname">
+                                <p>Enter your nickname here:</p>
+                                <input type="text" value={this.state.nick} onChange={this.handleNick} />
+                                {joinable || joiner ? 
+                                    <button onClick={this.joinGame}>GO!</button>
+                                    :
+                                    <div className="h-unjoinable">
+                                        <button onClick={this.notJoin}>GO!</button>
+                                        {warning ?
+                                            <div className="h-warning">
+                                                <p>There are no triviAUGH games currrently running, so you're unable to join.</p>
+                                            </div>
+                                        :
+                                            <div className="h-warning">
+                                                <p>hey gang</p>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                    }
+                </div>
+            }
             </div>
         )
     }
