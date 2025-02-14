@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import Home from './components/home/Home';
 import Game from './components/gameHub/gameLanding';
 import Playing from './components/gameHub/gameStart';
+import Waiting from './components/home/Waiting';
 
 const socket = io.connect("http://localhost:4000");
 
@@ -95,14 +96,15 @@ function App() {
           }
           { !started ?
             <Route path = '/game/game' Component = {() => (<Game joinedbefore={gamers} host={false} tempID={myself}/>)} />
-            ://allows a change to the component if the game is running, letting us not have to code the whole game and the landing in the same file
+          ://allows a change to the component if the game is running, letting us not have to code the whole game and the landing in the same file
             <Route path = '/game/game' Component = {() => (<Playing tempID={myself}/>)} />
-          }
+          }  
           { !started ?
             <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} tempID={myself}/>)} />
             :
             <Route path = '/game/host' Component = {() => (<Game joinedbefore={gamers} host={true} tempID={myself}/>)} />
           }
+          <Route path = '/game/waiting' Component = {() => (<Waiting tempID={myself}/>)} />
         </Routes>
       </BrowserRouter>
       <button onClick={sendMessage}>SOS</button>
