@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Timer from './Timer.js';
+import io from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 class Waiting extends Component {
     constructor(){
@@ -13,6 +15,19 @@ class Waiting extends Component {
 
     }
 
+    componentDidMount(){
+        this.socket = io.connect('http://localhost:4000');
+
+        this.socket.on('time_up', (data) => {
+            if(data === this.props.tempID){
+                console.log("time to hop in");
+                useNavigate('/game/game');
+            } else {
+                console.log("time for someone else to hop in");
+            }
+        });
+    }
+
     render(){
 
         return(
@@ -23,3 +38,5 @@ class Waiting extends Component {
         )
     }
 }
+
+export default Waiting;
