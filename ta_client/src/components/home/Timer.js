@@ -23,8 +23,8 @@ class Timer extends Component {
     }
 
     componentDidUpdate(){
-        if(this.state.length == this.props.time){
-            this.setState({ interval: clearInterval(this.state.interval) });
+        if(this.state.length === this.props.time){
+            this.setState({ interval: clearInterval(this.state.interval), length: 1 });
             this.socket.emit('timer_finished', this.props.tempID);
         }
     }
