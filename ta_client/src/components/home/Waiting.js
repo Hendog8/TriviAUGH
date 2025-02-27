@@ -11,7 +11,7 @@ function Waiting({ tempID }){
 
     socket.on('time_up', (data) => {
         if(data === tempID){
-            console.log("timeto hop in");
+            console.log("time to hop in");
             navigate('/game/game');
             //not supposed to be here, socket.join????
         } else {
@@ -21,7 +21,7 @@ function Waiting({ tempID }){
     return(
             <div className="waiting">
                 <p className="w-announcment">Loading, this'll only take a moment</p>
-                <Timer time={10} tempID={tempID}/>
+                <Timer time={2} tempID={tempID}/>
             </div>
     )
 }
