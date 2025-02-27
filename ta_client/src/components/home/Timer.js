@@ -32,7 +32,7 @@ class Timer extends Component {
     render(){
         return(
             <div>
-                <p>{10 - this.state.length}</p>
+                <p>{this.props.time - this.state.length}</p>
             </div>
         );
     }
