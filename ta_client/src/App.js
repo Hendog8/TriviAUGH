@@ -20,6 +20,7 @@ function App() {
                //should be pretty secure but you just can't be 100% certain so I'd like to switch to the counting later
                //plus the counting allows for tracking in player arrays which is mad convenient
 
+  var myself2 = '';
   function sendMessage(){
     console.log("HELLLLLLLLLLLLP HELP MEEEEEEEEEEEEEEE");
     socket.emit("sent_message", { message: "lmao" });
@@ -56,7 +57,7 @@ function App() {
   });
 
   socket.on('joined', (data) => {
-    console.log("HELP");
+    console.log("HELP | check: " + data.check + ", me: " + myself);
     hosting = false;
     let newTest = true;
     for(const g of gamers){
@@ -72,6 +73,7 @@ function App() {
 
     if(data.check === myself){
       console.log(data.name + " is me");
+      myself2 = data.name; //use this somewhere? Could simplify
     }
   });
 
