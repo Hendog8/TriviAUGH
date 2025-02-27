@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
     socket.on("joining", (data) => {
         playerNum++;
         console.log(data + " " + playerNum);
-        socket.broadcast.emit('joined', {name:data.message, id:playerNum, check:data.tempID});
+        socket.broadcast.emit('joined', {name:data.message, id:playerNum, check:data.check});
     });
 
     socket.on("host_joining", (data) => {
