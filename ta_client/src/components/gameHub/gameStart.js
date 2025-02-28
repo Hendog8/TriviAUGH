@@ -32,7 +32,11 @@ class Playing extends Component {
 
         this.socket.on('selected_answer', (data) => {
             if(data.name === this.state.nickname){
-                console.log("answer selection changing " + data.answer);
+                if(this.state.selectedAnswers[data.answer]){
+                    console.log("I'm deselecting " + data.answer);
+                } else {
+                    console.log("I'm selecting " + data.answer);
+                }
                 let newAnswers = this.state.selectedAnswers;
                 newAnswers[data.answer] = !newAnswers[data.answer];
                 this.setState({ selectedAnswers: newAnswers });
@@ -42,7 +46,7 @@ class Playing extends Component {
         this.socket.on('question_change', (data) => {
             console.log("question changed " + data.index);
             if(data.index === -1){
-                this.setState({ questionNum: this.state.questionNum++});
+                this.setState({ questionNum: this.state.questionNum+1});
             } else {
                 //allows for the potential to use this one method to either increment the question or select a specific question
                 this.setState({ questionNum: data.index });
