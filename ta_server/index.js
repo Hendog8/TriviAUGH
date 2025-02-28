@@ -58,8 +58,8 @@ io.on("connection", (socket) => {
     })
 
     socket.on('selecting_answer', (data) => {
-        console.log(data.name + " is selecting answer " + data.answer);
-        socket.broadcast.emit('selected_answer', data);
+        console.log(data.name + " is changing selection for answer " + data.answer);
+        socket.emit('selected_answer', data);
     });
 
     socket.on('question_changing', (data) => {
