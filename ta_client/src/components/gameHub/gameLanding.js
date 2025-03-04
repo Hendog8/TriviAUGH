@@ -159,7 +159,21 @@ class Game extends Component {
         this.socket.on('answers_submitted', (data) => {
             console.log(data.name + " answers received");
             //whoops forgot I need to actually check which answers are right lmao
-            let score = -45 * Math.sqrt(this.state.scoreTracker) + 500;
+            let score = 0;
+            //okay so we have + for correct selected and - for incorrect selected
+            //need + for incorrect not selected and - for correct not selected
+            for(const x of data.answers){
+                for(const y of this.state.questions[this.state.questionNum].correct){
+                    if(x === y){
+                        score += -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                    }
+                }
+                for(const z of this.state.questions[this.state.questionNum].incorrect){
+                    if(x === z){
+                        score -= -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                    }
+                }
+            }
             this.setState({ scoreTracker: this.state.scoreTracker++ });
             //reset to 0 when changing questions
         });
