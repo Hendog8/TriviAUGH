@@ -14,8 +14,8 @@ class Timer extends Component {
     componentDidMount(){
         this.socket = io.connect('http://localhost:4000');
         this.interval = setInterval(() => {
-            this.setState(prevState => ({ length: prevState.length + 1 }));
-        }, 1000);
+            this.setState(prevState => ({ length: prevState.length + .5 }));
+        }, 500);
     }
 
     componentWillUnmount(){
@@ -25,7 +25,11 @@ class Timer extends Component {
     componentDidUpdate(){
         if(this.state.length === this.props.time){
             this.setState({ interval: clearInterval(this.state.interval), length: 1 });
-            this.socket.emit('timer_finished', this.props.tempID);
+            if(this.props.type === 'waiting'){
+                this.socket.emit('timer_finished', this.props.tempID);
+            } else if(this.props.type === 'question'){
+                this.socket.emit('timer_finished', this.props.tempID);//'all');
+            }
         }
     }
 
