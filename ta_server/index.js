@@ -74,6 +74,10 @@ io.on("connection", (socket) => {
 
     socket.on('timer_finished', (data) => {
         console.log("time up");
-        socket.broadcast.emit('time_up', data);
+        /*if(data === 'all'){
+            socket.broadcast.emit('scoring');
+        } else {*/
+            socket.broadcast.emit('time_up', data);
+        //}
     });
 });
