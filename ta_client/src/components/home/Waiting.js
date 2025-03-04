@@ -21,7 +21,7 @@ function Waiting({ tempID }){
     return(
             <div className="waiting">
                 <p className="w-announcment">Loading, this'll only take a moment</p>
-                <Timer time={2} tempID={tempID}/>
+                <Timer time={2} type={'waiting'} tempID={tempID}/>
             </div>
     )
 }
