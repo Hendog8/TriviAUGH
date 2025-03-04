@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-
+import Timer from '../home/Timer.js';
 
 class Playing extends Component {
     constructor(){
@@ -10,15 +10,17 @@ class Playing extends Component {
             nickname: '',
             score: 0,
             selectedAnswers: [false, false, false, false],
-            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"] },
-                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"] },
-                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"] },
-                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"] },
-                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"] },
-                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"] },], 
+            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], time:10 },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:15 },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], time:10 },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], time:10 },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], time:10 },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], time:10 },], 
+                        //question, correct answers, incorrect answers, all answers, time to answer
             questionNum: 0, 
             submitted: false,
             scored: false,
+            scoreChange: 0,
         }
         this.selectAnswer = this.selectAnswer.bind(this);
         this.submitAnswers = this.submitAnswers.bind(this);
@@ -120,12 +122,12 @@ class Playing extends Component {
 
     submitAnswers(){
         console.log("answer submission");
-        this.socket.emit('submitting_answers', { name: this.state.nickname, answers: this.state.selectedAnswers });
+        this.socket.emit('submitting_answers', { name: this.state.nickname, answers: this.state.selectedAnswers, q: this.state.questionNum });
         this.setState({ submitted: true });
     }
 
     render(){
-        let { id, nickname, score, selectedAnswers, questions, questionNum, submitted, scored } = this.state;
+        let { id, nickname, score, selectedAnswers, questions, questionNum, submitted, scored, scoreChange } = this.state;
 
         return(
             <div className='playingGame'>
@@ -141,14 +143,20 @@ class Playing extends Component {
                         <button className='p-a4' onClick={this.selectAnswer}>{questions[questionNum].ans[3]}</button>
                         <br />
                         <button className='p-submit' onClick={this.submitAnswers}>submit</button>
+                        <br />
+                        <Timer time={questions[questionNum].time} type={'question'} />
                     </div>
                     :
                     <div className='p-submitted'>
                         { !scored ?
                             <div className='p-waiting'>
+                                <p>You're in! Now we wait for others to submit...</p>
                             </div>
                             :
                             <div className='p-scored'>
+                                { 
+                                    
+                                }
                             </div>
                         }
                     </div>
