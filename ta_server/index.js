@@ -74,10 +74,11 @@ io.on("connection", (socket) => {
 
     socket.on('timer_finished', (data) => {
         console.log("time up");
-        /*if(data === 'all'){
-            socket.broadcast.emit('scoring');
-        } else {*/
-            socket.broadcast.emit('time_up', data);
-        //}
+        if(data.who === 'all'){
+            console.log("question time up");
+            socket.emit('transition');
+        } else {
+            socket.emit('time_up', data);
+        }
     });
 });
