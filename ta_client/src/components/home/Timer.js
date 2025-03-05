@@ -28,7 +28,9 @@ class Timer extends Component {
             if(this.props.type === 'waiting'){
                 this.socket.emit('timer_finished', this.props.tempID);
             } else if(this.props.type === 'question'){
-                this.socket.emit('timer_finished', this.props.tempID);//'all');
+                //this.socket.emit('timer_finished', this.props.tempID);//'all');
+            } else if(this.props.type === 'host_question'){
+                this.socket.emit('timer_finished', {who: 'all'});
             }
         }
     }
