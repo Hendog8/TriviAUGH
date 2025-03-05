@@ -54,9 +54,16 @@ class Playing extends Component {
                 //allows for the potential to use this one method to either increment the question or select a specific question
                 this.setState({ questionNum: data.index });
             }
+            this.setState({ submitted: false, scored: false });
         });
 
-        
+        this.socket.on('transition', (data) => {
+            console.log('player transitioning');
+            if(!this.state.submitted){
+                //submitAnswers(); use this if you want them to earn points even without a submission on time
+                this.setState({ submitted: true, scored: true, scoreChange: 0 });
+            } 
+        });
 
         /*this.socket.on("player_updated", (data) => {
             if(data.nickname === this.state.nickname){
@@ -154,9 +161,16 @@ class Playing extends Component {
                             </div>
                             :
                             <div className='p-scored'>
-                                { 
-                                    
+                                { scoreChange > 0 ?
+                                    <div className='p-positive'>
+                                        <p>Nice Job!</p>
+                                    </div>
+                                :
+                                    <div className='p-negative'>
+                                        <p>Bro You Suck!</p>
+                                    </div>  
                                 }
+                                <p className='p-change'>Your score changed by {scoreChange}.</p>
                             </div>
                         }
                     </div>
