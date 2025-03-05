@@ -2,6 +2,7 @@ import React, { Component, useState } from 'react';
 import io from 'socket.io-client';
 import { Link } from 'react-router-dom';
 import Playing from './gameStart';
+import Timer from '../home/Timer.js';
 
 
 class Game extends Component {
@@ -10,12 +11,12 @@ class Game extends Component {
         this.state = {
             gamers: [], //array of player objects
                         //includes name, score, and an array of answers for the current question
-                        questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"] },
-                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"] },
-                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"] },
-                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"] },
-                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"] },
-                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"] },], 
+                        questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], time:10 },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:10 },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], time:10 },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], time:10 },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], time:10 },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], time:10 },], 
                         //array of question objects 
                         //each includes question, correct, and incorrect answers
             questionNum: 0, //index of current question in array
@@ -43,6 +44,8 @@ class Game extends Component {
                              //scores along a negative square root graph, arbitrarily -45sqrt(x) + 500 for now
             questionNav: 0, //question number to navigate to with toQ
                             //look for a simpler method to do this
+            transitioning: false, //if transition screens need to be displayed
+                            //should only be triggered briefly between questions, at the host's discretion
         }
         this.addGamer = this.addGamer.bind(this);
         this.sendReady = this.sendReady.bind(this);
@@ -189,6 +192,10 @@ class Game extends Component {
             this.setState({ scoreTracker: 0 });
         });
 
+        this.socket.on('transition', (data) => {
+            console.log('host transitioning');
+            this.setState({ transitioning: true });
+        })
         /*if(!host && this.state.gamers.length == 0 && joinedbefore.length > 0){
             console.log("testing adding " + joinedbefore[joinedbefore.length-1].nickname);
             this.addGamer(joinedbefore[joinedbefore.length-1].nickname);
@@ -282,7 +289,7 @@ class Game extends Component {
     }
 
     render(){
-        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me, id} = this.state;
+        let {gamers, questions, questionNum, timer, started, hoster, additionalGamer, firstLoop, me, id, transitioning} = this.state;
         let {joinedbefore, host} = this.props;
         console.log("gamers: " + gamers);
         console.log("joinedBefore: " + joinedbefore);
@@ -377,10 +384,20 @@ class Game extends Component {
                     <div className="g-ready">
                         <p className="g-gamernotice">The game has begun!</p>
                         <button onClick={this.sendReady}>JOIN!!!!</button>
-                        <button onClick={this.nextQ}>Next Question</button>
                         <br />
-                        <button onClick={this.toQ}>Go to Question</button>
-                        <input type="number" onChange={this.handleQ} />
+                        <p className='g-question'>{questions[questionNum].query}</p>
+                        <br />
+                        { !transitioning ?
+                            <Timer time={questions[questionNum].time} type={'host_question'} />
+                            :
+                            <div className="g-between">
+                                <p>Question over, ready to move on!</p>
+                                <button onClick={this.nextQ}>Next Question</button>
+                                <br />
+                                <button onClick={this.toQ}>Go to Question</button>
+                                <input type="number" onChange={this.handleQ} />
+                            </div>
+                        }
                     </div>
                     //sendReady here is gonna need to change to a way to change components to Playing
                     }
