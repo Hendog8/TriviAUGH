@@ -12,7 +12,7 @@ class Game extends Component {
             gamers: [], //array of player objects
                         //includes name, score, and an array of answers for the current question
                         questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], time:10 },
-                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:10 },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:15 },
                         { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], time:10 },
                         { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], time:10 },
                         { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], time:10 },
@@ -185,11 +185,12 @@ class Game extends Component {
             console.log("question changed " + data.index);
             if(data.index === -1){
                 this.setState({ questionNum: this.state.questionNum++});
+                console.log("now on question " + this.state.questionNum);
             } else {
                 //allows for the potential to use this one method to either increment the question or select a specific question
                 this.setState({ questionNum: data.index });
             }
-            this.setState({ scoreTracker: 0 });
+            this.setState({ scoreTracker: 0, transitioning: false });
         });
 
         this.socket.on('transition', (data) => {
@@ -276,6 +277,7 @@ class Game extends Component {
 
     nextQ(){
         console.log("going next");
+        //this.setState({ questionNum: this.state.questionNum++});
         this.socket.emit('question_changing', {index: -1});
     }
 
@@ -285,6 +287,7 @@ class Game extends Component {
     
     toQ(){
         console.log("going to " + this.state.questionNav);
+        //this.setState({ questionNum: this.state.questionNav });
         this.socket.emit('question_changing', {index: this.state.questionNav});
     }
 
@@ -309,6 +312,7 @@ class Game extends Component {
             }
         }
         console.log("gamerList: " + gamerList);
+        console.log(questions[questionNum].query);
 
         /*if(!host && me.nickname === "host"){
             me = gamerList[gamerList.length-1]
