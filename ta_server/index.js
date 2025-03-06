@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
 
     socket.on('question_changing', (data) => {
         console.log("question changing by " + data.index);
-        socket.broadcast.emit('question_change', (data));
+        io.emit('question_change', (data));
     });
 
     socket.on('submitting_answers', (data) => {
@@ -76,9 +76,10 @@ io.on("connection", (socket) => {
         console.log("time up");
         if(data.who === 'all'){
             console.log("question time up");
-            socket.emit('transition');
+            socket.broadcast.emit('transition');
         } else {
-            socket.emit('time_up', data);
+            console.log("I'm really certain time is up");
+            socket.broadcast.emit('time_up', data);
         }
     });
 });
