@@ -184,7 +184,8 @@ class Game extends Component {
         this.socket.on('question_change', (data) => {
             console.log("question changed " + data.index);
             if(data.index === -1){
-                this.setState({ questionNum: this.state.questionNum++});
+                //newQuestionNum = this.state.questionNum + 1;
+                this.setState({ questionNum: this.state.questionNum - data.index });//: newQuestionNum});
                 console.log("now on question " + this.state.questionNum);
             } else {
                 //allows for the potential to use this one method to either increment the question or select a specific question
@@ -389,10 +390,12 @@ class Game extends Component {
                         <p className="g-gamernotice">The game has begun!</p>
                         <button onClick={this.sendReady}>JOIN!!!!</button>
                         <br />
-                        <p className='g-question'>{questions[questionNum].query}</p>
                         <br />
                         { !transitioning ?
-                            <Timer time={questions[questionNum].time} type={'host_question'} />
+                            <div className="g-question">
+                                <p className='g-question'>{questions[questionNum].query}</p>
+                                <Timer time={questions[questionNum].time} type={'host_question'} />
+                            </div>
                             :
                             <div className="g-between">
                                 <p>Question over, ready to move on!</p>
