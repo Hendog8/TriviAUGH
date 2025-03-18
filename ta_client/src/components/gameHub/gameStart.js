@@ -10,13 +10,14 @@ class Playing extends Component {
             nickname: '',
             score: 0,
             selectedAnswers: [false, false, false, false],
-            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], time:10 },
-                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:15 },
-                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], time:10 },
-                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], time:10 },
-                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], time:10 },
-                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], time:10 },], 
-                        //question, correct answers, incorrect answers, all answers, time to answer
+            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], key:[true, false, false, true], time:10 },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], key:[false, false, true, true], time:15 },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], key:[true, true, true, false], time:10 },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], key:[true, true, true, true], time:10 },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], key:[false, false, false, false], time:10 },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], key:[true, false, false, false], time:10 },], 
+                        //question, correct answers, incorrect answers, all answers, key to check, time to answer
+                            //make a way make the key on launch from correct/incorrect and ans? Coulda allow more flexibility
             questionNum: 0, 
             submitted: false,
             scored: false,
@@ -63,19 +64,18 @@ class Playing extends Component {
                 //submitAnswers(); use this if you want them to earn points even without a submission on time
                 this.setState({ submitted: true, scored: true, scoreChange: 0 });
             } 
+            this.setState({ score: this.state.score + this.state.scoreChange });
         });
 
-        /*this.socket.on("player_updated", (data) => {
+        this.socket.on("player_updated", (data) => {
             if(data.nickname === this.state.nickname){
                 console.log("player update received");
-                if(data.score !== this.state.score || data.selectedAnswers !== this.state.selectedAnswers){
-                    this.setState({
-                        score: data.score,
-                        selectedAnswers: data.selectedAnswers
-                    });
-                }
+                this.setState({
+                    scoreChange: data.score,
+                    scored: true,
+                });
             }
-        });*/
+        });
     }
 
 
@@ -138,7 +138,7 @@ class Playing extends Component {
 
         return(
             <div className='playingGame'>
-                <p className='p-name'>{nickname + '; ' + id}</p>
+                <p className='p-name'>{nickname + '; ' + score}</p>
                 { !submitted ?
                     <div className='p-questioning'>
                         <p className='p-question'>{questions[questionNum].query}</p>
