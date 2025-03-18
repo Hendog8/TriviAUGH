@@ -11,12 +11,12 @@ class Game extends Component {
         this.state = {
             gamers: [], //array of player objects
                         //includes name, score, and an array of answers for the current question
-                        questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], time:10 },
-                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], time:15 },
-                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], time:10 },
-                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], time:10 },
-                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], time:10 },
-                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], time:10 },], 
+            questions: [{ query:"0. What?", correct:["who", "how"], incorrect:["where", "why"], ans:["who", "where", "why", "how"], key:[true, false, false, true], time:10 },
+                        { query: "1. Which of the following songs place in Mario Judah's top 5 most streamed (on Spotify)?", correct:["die very rough", "bih yah"], incorrect:["all red", "miss the rage"], ans: ["miss the rage", "sky", "die very rough", "bih yah"], key:[false, false, true, true], time:15 },
+                        { query: "2. ", correct:["1", "2", "3"], incorrect:["4"], ans:["1", "2", "3", "4"], key:[true, true, true, false], time:10 },
+                        { query: "3. ", correct:["1", "2", "3", "4"], incorrect:[], ans:["4", "3", "2", "1"], key:[true, true, true, true], time:10 },
+                        { query: "4. ", correct:[], incorrect:["1", "2", "3", "4"], ans:["2", "4", "1", "3"], key:[false, false, false, false], time:10 },
+                        { query: "5. ", correct:["6"], incorrect:["7", "8", "9"], ans:["6", "7", "8", "9"], key:[true, false, false, false], time:10 },], 
                         //array of question objects 
                         //each includes question, correct, and incorrect answers
             questionNum: 0, //index of current question in array
@@ -165,7 +165,7 @@ class Game extends Component {
             let score = 0;
             //okay so we have + for correct selected and - for incorrect selected
             //need + for incorrect not selected and - for correct not selected
-            for(const x of data.answers){
+            /*for(const x of data.answers){
                 for(const y of this.state.questions[this.state.questionNum].correct){
                     if(x === y){
                         score += -45 * Math.sqrt(this.state.scoreTracker) + 500;
@@ -176,7 +176,15 @@ class Game extends Component {
                         score -= -45 * Math.sqrt(this.state.scoreTracker) + 500;
                     }
                 }
+            }*/
+            for(let x = 0; x < data.answers.length; x++){
+                if(data.answers[x] === this.state.questions[data.q].key[x]){
+                    score += -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                } else {
+                    score -= -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                }
             }
+            this.socket.emit("player_update", {nickname: data.name, score: score });
             this.setState({ scoreTracker: this.state.scoreTracker++ });
             //reset to 0 when changing questions
         });
