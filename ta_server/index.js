@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
 
     socket.on("player_update", (data) => {
         console.log("player update sending");
-        socket.broadcast.emit("player_updated", data);
+        io.emit("player_updated", data);
     });
 
     socket.on("game_start", (data) => {
