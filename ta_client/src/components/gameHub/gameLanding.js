@@ -179,13 +179,14 @@ class Game extends Component {
             }*/
             for(let x = 0; x < data.answers.length; x++){
                 if(data.answers[x] === this.state.questions[data.q].key[x]){
-                    score += -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                    score += Math.floor(-45 * Math.sqrt(this.state.scoreTracker) + 500);
                 } else {
-                    score -= -45 * Math.sqrt(this.state.scoreTracker) + 500;
+                    score -= Math.floor(-45 * Math.sqrt(this.state.scoreTracker) + 500);
                 }
             }
             this.socket.emit("player_update", {nickname: data.name, score: score });
-            this.setState({ scoreTracker: this.state.scoreTracker++ });
+            this.setState({ scoreTracker: this.state.scoreTracker+1});
+            console.log(data.name + " SUBMISSION PLACE | " + this.state.scoreTracker)
             //reset to 0 when changing questions
         });
 
