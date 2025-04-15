@@ -1,47 +1,37 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-class Timer extends Component {
-    constructor(){
-        super();
-        this.state = {
-            length: 0,
-                   //maybe this works? unsure about props within constructors
-        }
-        this.interval = null;
-    }
+const socket = io.connect('http://localhost:4000');
 
-    componentDidMount(){
-        this.socket = io.connect('http://localhost:4000');
-        this.interval = setInterval(() => {
-            this.setState(prevState => ({ length: prevState.length + .5 }));
+function Timer ({ time, type, tempID }) {
+    const [length, setLength] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setLength(length + .5) 
         }, 500);
-    }
 
-    componentWillUnmount(){
-        this.setState({ interval: clearInterval(this.state.interval) });
-    }
-
-    componentDidUpdate(){
-        if(this.state.length === this.props.time){
-            this.setState({ interval: clearInterval(this.state.interval), length: 1 });
-            if(this.props.type === 'waiting'){
-                this.socket.emit('timer_finished', this.props.tempID);
-            } else if(this.props.type === 'question'){
-                //this.socket.emit('timer_finished', this.props.tempID);//'all');
-            } else if(this.props.type === 'host_question'){
-                this.socket.emit('timer_finished', {who: 'all'});
+        if (length === time) {
+            clearInterval(interval);
+            setLength(1);
+            if (type === 'waiting') {
+                socket.emit('timer_finished', tempID);
+            } else if (type === 'question') {
+                //socket.emit('timer_finished', tempID);//'all');
+            } else if (type === 'host_question') {
+                socket.emit('timer_finished', { who: 'all' });
             }
         }
-    }
 
-    render(){
-        return(
-            <div>
-                <p>{this.props.time - this.state.length}</p>
-            </div>
-        );
-    }
+        return () => clearInterval(interval);
+
+    }, [length]);
+
+    return(
+        <div>
+            <p>{time - length}</p>
+        </div>
+    );
 }
 
 export default Timer;
